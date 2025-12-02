@@ -6,7 +6,7 @@ Uma aplicação web moderna que simula a loja de cosméticos do Fortnite. O proj
 ## 🚀 Tecnologias Utilizadas
 
 *   **Frontend:** React 19, Tailwind CSS
-*   **Framework:** Next.js 16 (Compatible)
+*   **Framework:** vite.js (Compatible)
 *   **Banco de Dados:** PostgreSQL (via Neon Tech)
 *   **ORM:** Prisma
 *   **API Externa:** Fortnite-API.com
