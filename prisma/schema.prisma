@@ -1,0 +1,29 @@
+// Este é o seu arquivo de Schema do Prisma.
+// Saiba mais sobre ele na documentação: https://pris.ly/d/prisma-schema
+
+// Define o gerador do cliente Prisma, que cria o cliente TypeScript para você usar na aplicação.
+generator client {
+    provider = "prisma-client-js"
+}
+
+// Define a fonte de dados. Aponta para o seu banco de dados PostgreSQL.
+// A `url` é lida da variável de ambiente DATABASE_URL que você configurou no arquivo .env.local.
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// Define o modelo de dados para um Usuário.
+// Isso será transformado em uma tabela "User" no seu banco de dados.
+model User {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    name      String
+    password  String? // A senha é opcional, útil para logins sociais no futuro.
+    balance   Int      @default(10000) // Saldo inicial de V-Bucks.
+    inventory String[] // Uma lista (array) de IDs dos cosméticos que o usuário possui.
+
+    // O Prisma não suporta diretamente um array de objetos complexos como o histórico.
+    // Usar o tipo `Json` é a melhor abordagem para armazenar o histórico de transações.
+    history Json[] @default([])
+}
