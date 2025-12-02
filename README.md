@@ -32,7 +32,7 @@ Uma aplicação web moderna que simula a loja de cosméticos do Fortnite. O proj
 
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/SEU-USUARIO/fortinat-shop.git
+    git clone https://github.com/LEBEATO/fortinate-shopp.git
     cd fortinat-shop
     ```
 
