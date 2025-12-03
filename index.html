@@ -5,70 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fortinat-shop</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        fortnite: {
-                            yellow: '#ffe600',
-                            purple: '#b150ff',
-                            blue: '#2b99ff',
-                            dark: '#111827',
-                            card: '#1f2937'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-    </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "vite": "https://aistudiocdn.com/vite@^7.2.4",
-                "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-                "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",
-                "react/": "https://aistudiocdn.com/react@^19.2.0/",
-                "react": "https://aistudiocdn.com/react@^19.2.0",
-                "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
-                "path": "https://aistudiocdn.com/path@^0.12.7",
-                "url": "https://aistudiocdn.com/url@^0.11.4",
-                "@prisma/client": "https://aistudiocdn.com/@prisma/client@^7.0.1"
-            }
-        }
-    </script>
-
-    <link rel="stylesheet" href="/index.css">
 </head>
 
 <body>
     <div id="root"></div>
-
-    
+    <!-- O Vite injetará os scripts e CSS necessários aqui durante o build -->
+    <!-- O script de entrada deve apontar para o arquivo .tsx na raiz do projeto -->
     <script type="module" src="/index.tsx"></script>
-
 </body>
 
 </html>
