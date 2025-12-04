@@ -3,6 +3,7 @@ import React, { useState, useEffect, createContext, useContext, useMemo } from '
 import { HashRouter, Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 import { FortniteAPI } from './src/services/fortniteApi';
 import { MockPrisma } from './src/services/mockDb';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { Cosmetic, User, AuthState, Transaction } from './types';
 
 // --- Auth Context ---
@@ -75,45 +76,45 @@ const CosmeticCard: React.FC<{ item: Cosmetic }> = ({ item }) => {
   return (
     <Link to={`/cosmetic/${item.id}`} className={`group relative flex flex-col rounded-xl overflow-hidden border-2 ${rarityColor} transition-all hover:scale-105 hover:shadow-2xl hover:shadow-fortnite-purple/50`}>
       {/* Status Badges */}
-      <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+      <div className="absolute z-10 flex flex-col gap-1 top-2 left-2">
         {item.isNew && <Badge color="bg-fortnite-yellow text-black" text="NOVO" />}
         {item.isOnSale && <Badge color="bg-red-500 text-white" text="LOJA" />}
         {item.isPromotional && <Badge color="bg-green-500 text-white" text="PROMO" />}
       </div>
       
       {isOwned && (
-        <div className="absolute top-2 right-2 z-10 bg-fortnite-blue text-white p-1 rounded-full shadow-lg" title="Adquirido">
+        <div className="absolute z-10 p-1 text-white rounded-full shadow-lg top-2 right-2 bg-fortnite-blue" title="Adquirido">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
         </div>
       )}
 
-      <div className="aspect-square overflow-hidden bg-gray-900 relative">
+      <div className="relative overflow-hidden bg-gray-900 aspect-square">
         <img 
           src={item.images?.featured || item.images?.icon || item.images?.smallIcon} 
           alt={item.name} 
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
           loading="lazy"
         />
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <span className="text-white font-bold uppercase tracking-widest text-sm border border-white px-4 py-2">Ver Detalhes</span>
+        <div className="absolute inset-0 flex items-center justify-center transition-opacity opacity-0 bg-black/60 group-hover:opacity-100">
+          <span className="px-4 py-2 text-sm font-bold tracking-widest text-white uppercase border border-white">Ver Detalhes</span>
         </div>
       </div>
       
-      <div className="p-3 flex flex-col flex-grow bg-slate-800/90 backdrop-blur-sm">
-        <h3 className="text-white font-bold text-sm truncate">{item.name}</h3>
-        <p className="text-gray-400 text-xs truncate">{item.rarity?.displayValue || 'Comum'} &bull; {item.type?.displayValue}</p>
-        <div className="mt-auto pt-2 flex items-center justify-between">
+      <div className="flex flex-col flex-grow p-3 bg-slate-800/90 backdrop-blur-sm">
+        <h3 className="text-sm font-bold text-white truncate">{item.name}</h3>
+        <p className="text-xs text-gray-400 truncate">{item.rarity?.displayValue || 'Comum'} &bull; {item.type?.displayValue}</p>
+        <div className="flex items-center justify-between pt-2 mt-auto">
           {item.price ? (
             <div className="flex items-center gap-1">
               <div className="w-4 h-4 rounded-full bg-fortnite-yellow"></div>
-              <span className="text-white font-bold text-sm">{item.price}</span>
+              <span className="text-sm font-bold text-white">{item.price}</span>
               {item.regularPrice && item.regularPrice > item.price && (
-                <span className="text-gray-500 text-xs line-through ml-1">{item.regularPrice}</span>
+                <span className="ml-1 text-xs text-gray-500 line-through">{item.regularPrice}</span>
               )}
             </div>
           ) : (
-            <span className="text-gray-500 text-xs">Indisponível</span>
+            <span className="text-xs text-gray-500">Indisponível</span>
           )}
         </div>
       </div>
@@ -131,16 +132,16 @@ const Pagination = ({ current, total, onPageChange }: { current: number, total: 
   }
 
   return (
-    <div className="flex justify-center gap-2 mt-8 pb-8">
-      <button disabled={current === 1} onClick={() => onPageChange(current - 1)} className="px-3 py-1 rounded bg-slate-800 text-white disabled:opacity-50 hover:bg-slate-700">&lt;</button>
-      {current > 3 && <span className="text-gray-500 self-end">...</span>}
+    <div className="flex justify-center gap-2 pb-8 mt-8">
+      <button disabled={current === 1} onClick={() => onPageChange(current - 1)} className="px-3 py-1 text-white rounded bg-slate-800 disabled:opacity-50 hover:bg-slate-700">&lt;</button>
+      {current > 3 && <span className="self-end text-gray-500">...</span>}
       {pages.map(p => (
         <button key={p} onClick={() => onPageChange(p)} className={`px-3 py-1 rounded font-bold ${current === p ? 'bg-fortnite-blue text-white' : 'bg-slate-800 text-gray-300 hover:bg-slate-700'}`}>
           {p}
         </button>
       ))}
-      {current < total - 2 && <span className="text-gray-500 self-end">...</span>}
-      <button disabled={current === total} onClick={() => onPageChange(current + 1)} className="px-3 py-1 rounded bg-slate-800 text-white disabled:opacity-50 hover:bg-slate-700">&gt;</button>
+      {current < total - 2 && <span className="self-end text-gray-500">...</span>}
+      <button disabled={current === total} onClick={() => onPageChange(current + 1)} className="px-3 py-1 text-white rounded bg-slate-800 disabled:opacity-50 hover:bg-slate-700">&gt;</button>
     </div>
   );
 };
@@ -148,47 +149,92 @@ const Pagination = ({ current, total, onPageChange }: { current: number, total: 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between py-3 md:py-0 md:h-16">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="text-2xl font-black italic tracking-tighter text-white flex items-center gap-1">
-              <span className="text-fortnite-yellow">Fortinat</span>-shop
-            </Link>
-            <div className="flex items-baseline space-x-2 overflow-x-auto md:overflow-visible pb-1 md:pb-0 scrollbar-hide">
-              <Link to="/" className="text-gray-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap">Catálogo</Link>
-              {isAuthenticated && (
-                 <Link to="/my-items" className="text-gray-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap text-fortnite-yellow">Meus Itens</Link>
+    <>
+      <nav className="sticky top-0 z-50 border-b shadow-lg bg-slate-900 border-slate-800">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between py-3 md:py-0 md:h-16">
+            <div className="flex items-center gap-8">
+              <Link to="/" className="flex items-center gap-1 text-2xl italic font-black tracking-tighter text-white">
+                <span className="text-fortnite-yellow">Fortinat</span>-shop
+              </Link>
+              {/* Desktop Navigation Links */}
+              <div className="items-baseline hidden space-x-2 md:flex">
+                <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-300 transition-all rounded-md hover:text-white hover:bg-slate-800 whitespace-nowrap">Catálogo</Link>
+                {isAuthenticated && (
+                   <Link to="/my-items" className="px-3 py-2 text-sm font-medium transition-all rounded-md hover:text-white hover:bg-slate-800 whitespace-nowrap text-fortnite-yellow">Meus Itens</Link>
+                )}
+                <Link to="/users" className="px-3 py-2 text-sm font-medium text-gray-300 transition-all rounded-md hover:text-white hover:bg-slate-800 whitespace-nowrap">Comunidade</Link>
+              </div>
+            </div>
+
+            {/* Hamburger Icon for Mobile */}
+            <div className="text-2xl text-white cursor-pointer md:hidden" onClick={toggleMenu}>
+              {isOpen ? <FaTimes /> : <FaBars />}
+            </div>
+
+            {/* Desktop User Info / Login */}
+            <div className="items-center hidden gap-4 ml-auto md:flex">
+              {isAuthenticated && user ? (
+                <>
+                  <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner">
+                    <div className="w-4 h-4 rounded-full bg-fortnite-yellow shadow-[0_0_10px_rgba(255,230,0,0.6)] animate-pulse"></div>
+                    <span className="font-mono text-sm font-bold text-fortnite-yellow">{user.balance.toLocaleString()}</span>
+                  </div>
+                  <Link to="/profile" className="flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-fortnite-blue">
+                    <div className="flex items-center justify-center w-8 h-8 text-xs rounded bg-fortnite-purple">
+                      {user.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <span className="hidden sm:inline">{user.name}</span>
+                  </Link>
+                  <button onClick={() => { logout(); navigate('/'); }} className="text-xs font-bold tracking-wide text-gray-400 uppercase hover:text-red-400">Sair</button>
+                </>
+              ) : (
+                <Link to="/login" className="px-5 py-2 text-sm font-bold text-white transition-all rounded shadow-lg bg-fortnite-blue hover:bg-blue-600 shadow-blue-500/20 hover:shadow-blue-500/40">
+                  ENTRAR
+                </Link>
               )}
-              <Link to="/users" className="text-gray-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap">Comunidade</Link>
             </div>
           </div>
-          <div className="flex items-center gap-4 ml-auto mt-2 md:mt-0">
-            {isAuthenticated && user ? (
-              <>
-                <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 shadow-inner">
-                  <div className="w-4 h-4 rounded-full bg-fortnite-yellow shadow-[0_0_10px_rgba(255,230,0,0.6)] animate-pulse"></div>
-                  <span className="text-fortnite-yellow font-bold text-sm font-mono">{user.balance.toLocaleString()}</span>
-                </div>
-                <Link to="/profile" className="text-sm font-bold text-white hover:text-fortnite-blue transition-colors flex items-center gap-2">
-                  <div className="w-8 h-8 rounded bg-fortnite-purple flex items-center justify-center text-xs">
-                    {user.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <span className="hidden sm:inline">{user.name}</span>
-                </Link>
-                <button onClick={() => { logout(); navigate('/'); }} className="text-xs text-gray-400 hover:text-red-400 uppercase font-bold tracking-wide">Sair</button>
-              </>
-            ) : (
-              <Link to="/login" className="bg-fortnite-blue hover:bg-blue-600 text-white px-5 py-2 rounded font-bold text-sm transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
-                ENTRAR
-              </Link>
-            )}
-          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      <ul
+        className={
+          `md:hidden flex flex-col w-4/5 max-w-sm h-[calc(100vh-4rem)] fixed top-16 bg-gray-800 transition-transform duration-300 ease-in-out z-40 ${isOpen ? 'left-0' : 'left-[-100%]'}`
+        }
+      >
+        <li className="w-full border-b border-gray-600"><Link to="/" className="block py-6 text-xl text-center text-white no-underline hover:bg-gray-700" onClick={toggleMenu}>Catálogo</Link></li>
+        {isAuthenticated && (
+          <li className="w-full border-b border-gray-600"><Link to="/my-items" className="block py-6 text-xl text-center no-underline text-fortnite-yellow hover:bg-gray-700" onClick={toggleMenu}>Meus Itens</Link></li>
+        )}
+        <li className="w-full border-b border-gray-600"><Link to="/users" className="block py-6 text-xl text-center text-white no-underline hover:bg-gray-700" onClick={toggleMenu}>Comunidade</Link></li>
+        
+        <li className="w-full px-8 mt-auto mb-8">
+          {isAuthenticated && user ? (
+            <div className='flex flex-col gap-4'>
+              <Link to="/profile" className="block py-4 text-xl text-center text-white no-underline rounded-md bg-fortnite-purple hover:bg-purple-700" onClick={toggleMenu}>
+                Ver Perfil ({user.name})
+              </Link>
+              <button onClick={() => { toggleMenu(); logout(); navigate('/'); }} className="block w-full py-3 text-lg text-center text-red-400 no-underline rounded-md hover:bg-red-500/20">
+                Sair
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="block py-4 text-xl font-bold text-center text-black no-underline rounded-md bg-fortnite-yellow hover:bg-yellow-500" onClick={toggleMenu}>
+              Entrar / Criar Conta
+            </Link>
+          )}
+        </li>
+      </ul>
+    </>
   );
 };
 
@@ -319,16 +365,16 @@ const CatalogPage = () => {
   const currentData = filteredItems.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-3xl font-black text-white italic">CATÁLOGO DE ITENS</h1>
+    <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="flex flex-col items-center justify-between gap-4 mb-6 md:flex-row">
+        <h1 className="text-3xl italic font-black text-white">CATÁLOGO DE ITENS</h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400 font-bold">Encontrados: {filteredItems.length}</span>
+          <span className="text-sm font-bold text-gray-400">Encontrados: {filteredItems.length}</span>
           <button 
             onClick={() => setShowFilters(!showFilters)}
             className={`px-4 py-2 rounded font-bold text-sm flex items-center gap-2 transition-colors ${showFilters ? 'bg-fortnite-yellow text-black' : 'bg-slate-700 text-white hover:bg-slate-600'}`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
             </svg>
             {showFilters ? 'Fechar Filtros' : 'Filtrar Itens'}
@@ -338,46 +384,46 @@ const CatalogPage = () => {
 
       {/* Collapsible Filter Panel */}
       {showFilters && (
-        <div className="mb-8 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl animate-in fade-in slide-in-from-top-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-6 mb-8 border shadow-xl bg-slate-800 rounded-xl border-slate-700 animate-in fade-in slide-in-from-top-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-400 uppercase">Buscar</label>
-              <input type="text" placeholder="Nome do cosmético..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-2 rounded focus:border-fortnite-blue outline-none" />
+              <label htmlFor="search-input" className="text-xs font-bold text-gray-400 uppercase">Buscar</label>
+              <input id="search-input" type="text" placeholder="Nome do cosmético..." value={search} onChange={e => setSearch(e.target.value)} className="w-full p-2 text-white border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue" />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-400 uppercase">Tipo</label>
-              <select value={type} onChange={e => setType(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-2 rounded focus:border-fortnite-blue outline-none">
+              <label htmlFor="type-select" className="text-xs font-bold text-gray-400 uppercase">Tipo</label>
+              <select id="type-select" value={type} onChange={e => setType(e.target.value)} className="w-full p-2 text-white border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue">
                 <option value="">Todos</option>
                 {uniqueTypes.map(([val, label]) => <option key={val} value={val}>{label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-400 uppercase">Raridade</label>
-              <select value={rarity} onChange={e => setRarity(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-2 rounded focus:border-fortnite-blue outline-none">
+              <label htmlFor="rarity-select" className="text-xs font-bold text-gray-400 uppercase">Raridade</label>
+              <select id="rarity-select" value={rarity} onChange={e => setRarity(e.target.value)} className="w-full p-2 text-white border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue">
                 <option value="">Todas</option>
                 {uniqueRarities.map(([val, label]) => <option key={val} value={val}>{label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-gray-400 uppercase">Período</label>
+              <label id="period-label" className="text-xs font-bold text-gray-400 uppercase">Período</label>
               <div className="flex gap-2">
-                <input type="date" value={dateStart} onChange={e => setDateStart(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-2 rounded text-xs" />
-                <input type="date" value={dateEnd} onChange={e => setDateEnd(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-2 rounded text-xs" />
+                <input aria-label="Data de início" type="date" value={dateStart} onChange={e => setDateStart(e.target.value)} className="w-full p-2 text-xs text-white border rounded bg-slate-900 border-slate-600" />
+                <input aria-label="Data de fim" type="date" value={dateEnd} onChange={e => setDateEnd(e.target.value)} className="w-full p-2 text-xs text-white border rounded bg-slate-900 border-slate-600" />
               </div>
             </div>
           </div>
-          <div className="mt-4 flex flex-wrap gap-4 justify-between items-center border-t border-slate-700 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 mt-4 border-t border-slate-700">
              <div className="flex flex-wrap gap-4">
-                <label className="flex items-center gap-2 cursor-pointer hover:text-fortnite-yellow transition-colors">
-                  <input type="checkbox" checked={isNew} onChange={e => setIsNew(e.target.checked)} className="accent-fortnite-yellow w-4 h-4" />
+                <label className="flex items-center gap-2 transition-colors cursor-pointer hover:text-fortnite-yellow">
+                  <input type="checkbox" checked={isNew} onChange={e => setIsNew(e.target.checked)} className="w-4 h-4 accent-fortnite-yellow" />
                   <span className="text-sm font-bold text-gray-300">Apenas Novos</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:text-red-400 transition-colors">
-                  <input type="checkbox" checked={isSale} onChange={e => setIsSale(e.target.checked)} className="accent-red-500 w-4 h-4" />
+                <label className="flex items-center gap-2 transition-colors cursor-pointer hover:text-red-400">
+                  <input type="checkbox" checked={isSale} onChange={e => setIsSale(e.target.checked)} className="w-4 h-4 accent-red-500" />
                   <span className="text-sm font-bold text-gray-300">Loja Atual</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:text-green-400 transition-colors">
-                  <input type="checkbox" checked={isPromo} onChange={e => setIsPromo(e.target.checked)} className="accent-green-500 w-4 h-4" />
+                <label className="flex items-center gap-2 transition-colors cursor-pointer hover:text-green-400">
+                  <input type="checkbox" checked={isPromo} onChange={e => setIsPromo(e.target.checked)} className="w-4 h-4 accent-green-500" />
                   <span className="text-sm font-bold text-gray-300">Em Promoção</span>
                 </label>
              </div>
@@ -390,11 +436,11 @@ const CatalogPage = () => {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fortnite-yellow"></div>
+          <div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-fortnite-yellow"></div>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {currentData.map(item => <CosmeticCard key={item.id} item={item} />)}
           </div>
           <Pagination current={page} total={totalPages} onPageChange={setPage} />
@@ -434,25 +480,25 @@ const MyItemsPage = () => {
     fetchItems();
   }, [user, isAuthenticated, navigate]);
 
-  if (loading) return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fortnite-yellow"></div></div>;
+  if (loading) return <div className="flex justify-center py-20"><div className="w-12 h-12 border-t-2 border-b-2 rounded-full animate-spin border-fortnite-yellow"></div></div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="px-4 py-8 mx-auto max-w-7xl">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-fortnite-yellow rounded-full flex items-center justify-center text-black font-black text-xl">
+        <div className="flex items-center justify-center w-12 h-12 text-xl font-black text-black rounded-full bg-fortnite-yellow">
           {items.length}
         </div>
-        <h1 className="text-3xl font-black text-white italic">MEUS ITENS</h1>
+        <h1 className="text-3xl italic font-black text-white">MEUS ITENS</h1>
       </div>
 
       {items.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {items.map(item => <CosmeticCard key={item.id} item={item} />)}
         </div>
       ) : (
-        <div className="text-center py-20 bg-slate-800 rounded-xl border border-slate-700">
-          <p className="text-gray-400 text-lg mb-4">Você ainda não comprou nenhum cosmético.</p>
-          <Link to="/" className="inline-block bg-fortnite-blue text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors">
+        <div className="py-20 text-center border bg-slate-800 rounded-xl border-slate-700">
+          <p className="mb-4 text-lg text-gray-400">Você ainda não comprou nenhum cosmético.</p>
+          <Link to="/" className="inline-block px-6 py-3 font-bold text-white transition-colors rounded-lg bg-fortnite-blue hover:bg-blue-600">
             Ir para o Catálogo
           </Link>
         </div>
@@ -523,55 +569,55 @@ const CosmeticDetail = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-20 text-white">Carregando...</div>;
-  if (!item) return <div className="text-center py-20 text-white">Item não encontrado.</div>;
+  if (loading) return <div className="py-20 text-center text-white">Carregando...</div>;
+  if (!item) return <div className="py-20 text-center text-white">Item não encontrado.</div>;
 
   const isOwned = user?.inventory.includes(item.id);
   const canAfford = (user?.balance || 0) >= (item.price || 0);
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8">
-      <button onClick={() => navigate(-1)} className="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
+    <div className="max-w-5xl p-4 mx-auto md:p-8">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white">
         &larr; Voltar
       </button>
       
-      <div className="bg-slate-800 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 flex flex-col md:flex-row">
-        <div className="md:w-1/2 bg-slate-900 relative">
-          <img src={item.images.featured || item.images.icon} alt={item.name} className="w-full h-full object-contain p-8" />
+      <div className="flex flex-col overflow-hidden border shadow-2xl bg-slate-800 rounded-2xl border-slate-700 md:flex-row">
+        <div className="relative md:w-1/2 bg-slate-900">
+          <img src={item.images.featured || item.images.icon} alt={item.name} className="object-contain w-full h-full p-8" />
           {isOwned && (
-             <div className="absolute top-4 right-4 bg-fortnite-blue text-white px-4 py-2 rounded-full font-bold shadow-lg">
+             <div className="absolute px-4 py-2 font-bold text-white rounded-full shadow-lg top-4 right-4 bg-fortnite-blue">
                ADQUIRIDO
              </div>
           )}
         </div>
         
-        <div className="md:w-1/2 p-8 flex flex-col">
+        <div className="flex flex-col p-8 md:w-1/2">
           <div className="mb-auto">
             <div className="flex gap-2 mb-2">
               <Badge color="bg-gray-700 text-gray-300" text={item.type?.displayValue} />
               <Badge color="bg-gray-700 text-gray-300" text={item.rarity?.displayValue} />
             </div>
-            <h1 className="text-4xl font-black text-white mb-4 italic">{item.name}</h1>
-            <p className="text-gray-300 text-lg leading-relaxed mb-6">{item.description}</p>
+            <h1 className="mb-4 text-4xl italic font-black text-white">{item.name}</h1>
+            <p className="mb-6 text-lg leading-relaxed text-gray-300">{item.description}</p>
             
             {item.bundleIds && item.bundleIds.length > 0 && (
-              <div className="bg-slate-900/50 p-4 rounded-lg mb-6">
-                <p className="text-sm text-gray-400 uppercase font-bold mb-2">Inclui neste pacote:</p>
-                <p className="text-white text-sm">{item.bundleIds.length} itens adicionais</p>
+              <div className="p-4 mb-6 rounded-lg bg-slate-900/50">
+                <p className="mb-2 text-sm font-bold text-gray-400 uppercase">Inclui neste pacote:</p>
+                <p className="text-sm text-white">{item.bundleIds.length} itens adicionais</p>
               </div>
             )}
             
             <div className="flex items-center gap-2 mb-6">
-               <span className="text-gray-400 text-sm">Adicionado em:</span>
-               <span className="text-white font-mono">{new Date(item.added).toLocaleDateString('pt-BR')}</span>
+               <span className="text-sm text-gray-400">Adicionado em:</span>
+               <span className="font-mono text-white">{new Date(item.added).toLocaleDateString('pt-BR')}</span>
             </div>
           </div>
 
-          <div className="border-t border-slate-700 pt-6 mt-6">
+          <div className="pt-6 mt-6 border-t border-slate-700">
             {!isOwned ? (
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs uppercase font-bold">Preço</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase">Preço</span>
                   <div className="flex items-center gap-2">
                      <div className="w-6 h-6 rounded-full bg-fortnite-yellow"></div>
                      <span className="text-3xl font-black text-white">{item.price}</span>
@@ -580,19 +626,19 @@ const CosmeticDetail = () => {
                 <button 
                   onClick={handleBuy}
                   disabled={!canAfford}
-                  className={`px-8 py-4 rounded-lg font-black uppercase tracking-wide text-lg transition-all shadow-lg ${canAfford ? 'bg-fortnite-yellow hover:bg-yellow-400 text-black hover:scale-105' : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
+                  className={`px-6 py-3 text-base md:px-8 md:py-4 md:text-lg rounded-lg font-black uppercase tracking-wide transition-all shadow-lg ${canAfford ? 'bg-fortnite-yellow hover:bg-yellow-400 text-black hover:scale-105' : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
                 >
                   {canAfford ? 'Comprar Agora' : 'Saldo Insuficiente'}
                 </button>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-green-500/10 border border-green-500/50 p-4 rounded-lg text-center">
-                  <p className="text-green-400 font-bold">Você possui este item.</p>
+                <div className="p-4 text-center border rounded-lg bg-green-500/10 border-green-500/50">
+                  <p className="font-bold text-green-400">Você possui este item.</p>
                 </div>
                 <button 
                   onClick={handleRefund}
-                  className="w-full px-6 py-3 rounded-lg font-bold uppercase tracking-wide text-white border border-red-500/50 hover:bg-red-500/20 text-red-400 transition-colors"
+                  className="w-full px-6 py-3 font-bold tracking-wide text-red-400 uppercase transition-colors border rounded-lg border-red-500/50 hover:bg-red-500/20"
                 >
                   Devolver Item (Reembolso)
                 </button>
@@ -637,23 +683,23 @@ const UserProfile = () => {
   if (!user) return <div className="p-8 text-center text-white">Faça login para ver seu perfil.</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="bg-slate-800 rounded-xl p-6 mb-8 border border-slate-700 flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-fortnite-purple flex items-center justify-center text-4xl font-bold text-white shadow-lg">
+    <div className="px-4 py-8 mx-auto max-w-7xl">
+      <div className="flex flex-col items-center gap-6 p-6 mb-8 border bg-slate-800 rounded-xl border-slate-700 sm:flex-row">
+        <div className="flex items-center justify-center w-24 h-24 text-4xl font-bold text-white rounded-full shadow-lg bg-fortnite-purple">
           {user.name.substring(0, 2).toUpperCase()}
         </div>
         <div className="text-center sm:text-left">
-          <h1 className="text-3xl font-bold text-white mb-2">{user.name}</h1>
+          <h1 className="mb-2 text-3xl font-bold text-white">{user.name}</h1>
           <p className="text-gray-400">{user.email}</p>
-          <div className="mt-4 inline-flex items-center gap-3 bg-slate-900 px-4 py-2 rounded-lg border border-slate-700">
-            <span className="text-gray-400 text-sm uppercase font-bold">Saldo V-Bucks:</span>
+          <div className="inline-flex items-center gap-3 px-4 py-2 mt-4 border rounded-lg bg-slate-900 border-slate-700">
+            <span className="text-sm font-bold text-gray-400 uppercase">Saldo V-Bucks:</span>
             <div className="w-5 h-5 rounded-full bg-fortnite-yellow"></div>
             <span className="text-xl font-black text-white">{user.balance.toLocaleString()}</span>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4 border-b border-slate-700 mb-6">
+      <div className="flex gap-4 mb-6 border-b border-slate-700">
         <button onClick={() => setActiveTab('inventory')} className={`pb-3 px-4 font-bold text-sm uppercase tracking-wide transition-colors ${activeTab === 'inventory' ? 'text-fortnite-blue border-b-2 border-fortnite-blue' : 'text-gray-400 hover:text-white'}`}>
           Meus Cosméticos
         </button>
@@ -663,19 +709,19 @@ const UserProfile = () => {
       </div>
 
       {activeTab === 'inventory' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {inventoryItems.length > 0 ? (
             inventoryItems.map(item => <CosmeticCard key={item.id} item={item} />)
           ) : (
-            <p className="col-span-full text-center text-gray-500 py-10">Nenhum item adquirido.</p>
+            <p className="py-10 text-center text-gray-500 col-span-full">Nenhum item adquirido.</p>
           )}
         </div>
       )}
 
       {activeTab === 'history' && (
-        <div className="overflow-x-auto rounded-lg border border-slate-700">
-          <table className="w-full text-left text-sm text-gray-300">
-            <thead className="bg-slate-900 text-gray-400 uppercase font-bold text-xs">
+        <div className="overflow-x-auto border rounded-lg border-slate-700">
+          <table className="w-full text-sm text-left text-gray-300">
+            <thead className="text-xs font-bold text-gray-400 uppercase bg-slate-900">
               <tr>
                 <th className="px-6 py-4">Data</th>
                 <th className="px-6 py-4">Item</th>
@@ -690,8 +736,8 @@ const UserProfile = () => {
                 return (
                   <tr key={tx.id} className="hover:bg-slate-750">
                     <td className="px-6 py-4">{new Date(tx.date).toLocaleDateString()} {new Date(tx.date).toLocaleTimeString()}</td>
-                    <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                      {tx.cosmeticImage && <img src={tx.cosmeticImage} className="w-8 h-8 rounded bg-gray-900" />}
+                    <td className="flex items-center gap-3 px-6 py-4 font-medium text-white">
+                      {tx.cosmeticImage && <img src={tx.cosmeticImage} alt={tx.cosmeticName} className="w-8 h-8 bg-gray-900 rounded" />}
                       {tx.cosmeticName}
                     </td>
                     <td className="px-6 py-4">
@@ -702,7 +748,7 @@ const UserProfile = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       {canRefund && (
-                        <button onClick={() => handleRefund(tx.cosmeticId)} className="text-xs bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-3 py-1 rounded border border-red-500/50 transition-all">
+                        <button onClick={() => handleRefund(tx.cosmeticId)} className="px-3 py-1 text-xs text-red-500 transition-all border rounded bg-red-500/10 hover:bg-red-500 hover:text-white border-red-500/50">
                           Devolver
                         </button>
                       )}
@@ -740,19 +786,19 @@ const UsersDirectory = () => {
   const currentUsers = users.slice((page - 1) * USERS_PER_PAGE, page * USERS_PER_PAGE);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-black text-white italic mb-8">COMUNIDADE</h1>
+    <div className="px-4 py-8 mx-auto max-w-7xl">
+      <h1 className="mb-8 text-3xl italic font-black text-white">COMUNIDADE</h1>
       
       {selectedUser ? (
-        <div className="animate-in fade-in zoom-in duration-300">
-          <button onClick={() => setSelectedUser(null)} className="mb-4 text-fortnite-blue hover:underline font-bold">&larr; Voltar para lista</button>
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 mb-6">
+        <div className="duration-300 animate-in fade-in zoom-in">
+          <button onClick={() => setSelectedUser(null)} className="mb-4 font-bold text-fortnite-blue hover:underline">&larr; Voltar para lista</button>
+          <div className="p-6 mb-6 border bg-slate-800 rounded-xl border-slate-700">
             <h2 className="text-2xl font-bold text-white">Inventário de {selectedUser.name}</h2>
-            <p className="text-gray-400 mb-4">Itens adquiridos: {userItems.length}</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            <p className="mb-4 text-gray-400">Itens adquiridos: {userItems.length}</p>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
               {userItems.map(item => (
-                <Link to={`/cosmetic/${item.id}`} key={item.id} className="block aspect-square bg-slate-900 rounded-lg overflow-hidden border border-slate-700 hover:border-fortnite-purple transition-colors" title={item.name}>
-                  <img src={item.images.smallIcon} className="w-full h-full object-cover" loading="lazy" />
+                <Link to={`/cosmetic/${item.id}`} key={item.id} className="block overflow-hidden transition-colors border rounded-lg aspect-square bg-slate-900 border-slate-700 hover:border-fortnite-purple" title={item.name}>
+                  <img src={item.images.smallIcon} alt={item.name} className="object-cover w-full h-full" loading="lazy" />
                 </Link>
               ))}
             </div>
@@ -760,16 +806,16 @@ const UsersDirectory = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {currentUsers.map(u => (
-              <div key={u.id} onClick={() => handleUserClick(u)} className="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-fortnite-blue cursor-pointer transition-all hover:-translate-y-1">
+              <div key={u.id} onClick={() => handleUserClick(u)} className="p-4 transition-all border rounded-lg cursor-pointer bg-slate-800 border-slate-700 hover:border-fortnite-blue hover:-translate-y-1">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded bg-fortnite-purple flex items-center justify-center text-white font-bold">
+                  <div className="flex items-center justify-center w-12 h-12 font-bold text-white rounded bg-fortnite-purple">
                     {u.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-white font-bold truncate">{u.name}</h3>
-                    <p className="text-gray-400 text-xs">{u.inventory.length} itens</p>
+                    <h3 className="font-bold text-white truncate">{u.name}</h3>
+                    <p className="text-xs text-gray-400">{u.inventory.length} itens</p>
                   </div>
                 </div>
               </div>
@@ -804,25 +850,25 @@ const AuthPage = ({ type }: { type: 'login' | 'register' }) => {
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <div className="w-full max-w-md bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl">
-        <h2 className="text-3xl font-black text-white italic text-center mb-8">
+      <div className="w-full max-w-md p-8 border shadow-2xl bg-slate-800 rounded-2xl border-slate-700">
+        <h2 className="mb-8 text-3xl italic font-black text-center text-white">
           {type === 'login' ? 'LOGIN' : 'CRIAR CONTA'}
         </h2>
-        {error && <div className="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded mb-4 text-sm text-center">{error}</div>}
+        {error && <div className="p-3 mb-4 text-sm text-center text-red-200 border border-red-500 rounded bg-red-500/20">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           {type === 'register' && (
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Nome</label>
-              <input required type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded focus:border-fortnite-blue outline-none transition-colors" />
+              <label htmlFor="name-input" className="block mb-1 text-xs font-bold text-gray-400 uppercase">Nome</label>
+              <input id="name-input" required type="text" value={name} onChange={e => setName(e.target.value)} className="w-full p-3 text-white transition-colors border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue" />
             </div>
           )}
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">E-mail</label>
-            <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded focus:border-fortnite-blue outline-none transition-colors" />
+            <label htmlFor="email-input" className="block mb-1 text-xs font-bold text-gray-400 uppercase">E-mail</label>
+            <input id="email-input" required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-3 text-white transition-colors border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue" />
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Senha</label>
-            <input required type="password" value={pass} onChange={e => setPass(e.target.value)} className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded focus:border-fortnite-blue outline-none transition-colors" />
+            <label htmlFor="password-input" className="block mb-1 text-xs font-bold text-gray-400 uppercase">Senha</label>
+            <input id="password-input" required type="password" value={pass} onChange={e => setPass(e.target.value)} className="w-full p-3 text-white transition-colors border rounded outline-none bg-slate-900 border-slate-600 focus:border-fortnite-blue" />
           </div>
           <button type="submit" className="w-full bg-fortnite-yellow hover:bg-yellow-400 text-black font-black uppercase py-3 rounded shadow-lg hover:shadow-yellow-500/50 transition-all transform hover:-translate-y-0.5">
             {type === 'login' ? 'Entrar' : 'Cadastrar e Ganhar 10.000 V-Bucks'}
@@ -830,9 +876,9 @@ const AuthPage = ({ type }: { type: 'login' | 'register' }) => {
         </form>
         <div className="mt-6 text-center">
           {type === 'login' ? (
-            <Link to="/register" className="text-fortnite-blue hover:text-white text-sm font-bold">Não tem conta? Cadastre-se</Link>
+            <Link to="/register" className="text-sm font-bold text-fortnite-blue hover:text-white">Não tem conta? Cadastre-se</Link>
           ) : (
-            <Link to="/login" className="text-fortnite-blue hover:text-white text-sm font-bold">Já tem conta? Faça login</Link>
+            <Link to="/login" className="text-sm font-bold text-fortnite-blue hover:text-white">Já tem conta? Faça login</Link>
           )}
         </div>
       </div>
@@ -844,7 +890,7 @@ const App = () => {
   return (
     <HashRouter>
       <AuthProvider>
-        <div className="min-h-screen flex flex-col font-sans">
+        <div className="flex flex-col min-h-screen font-sans">
           <Navbar />
           <main className="flex-grow">
             <Routes>
@@ -857,7 +903,7 @@ const App = () => {
               <Route path="/register" element={<AuthPage type="register" />} />
             </Routes>
           </main>
-          <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-gray-500 text-sm">
+          <footer className="py-8 text-sm text-center text-gray-500 border-t bg-slate-900 border-slate-800">
             <p>&copy; 2023 Fortinat-shop. Dados fornecidos por Fortnite-API.</p>
             <p className="mt-2 text-xs opacity-50">Este projeto não é afiliado à Epic Games.</p>
           </footer>
