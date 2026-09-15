@@ -2,17 +2,18 @@
 export default {
     content: [
         "./index.html",
-        "./*.{js,ts,jsx,tsx}", // Procura por arquivos na pasta raiz
+        "./*.{js,ts,jsx,tsx}",
+        "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
         extend: {
             colors: {
                 fortnite: {
-                    yellow: '#ffe600',
-                    purple: '#b150ff',
-                    blue: '#2b99ff',
-                    dark: '#111827',
-                    card: '#1f2937'
+                    yellow: '#f5e400',
+                    purple: '#8b5cf6',
+                    blue: '#31a8ff',
+                    dark: '#070b17',
+                    card: '#11192b'
                 }
             }
         },

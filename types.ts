@@ -33,6 +33,8 @@ export interface Cosmetic {
   isOnSale?: boolean;
   isPromotional?: boolean;
   bundleIds?: string[]; // IDs of items included if this is a bundle
+  shopSection?: string;
+  availableUntil?: string;
 }
 
 // User & Database Types

@@ -5,6 +5,7 @@ import { FortniteAPI } from './src/services/fortniteApi';
 import { MockPrisma } from './src/services/mockDb';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Cosmetic, User, AuthState, Transaction } from './types';
+import { StoreCatalog } from './src/components/store/StoreCatalog';
 
 // --- Auth Context ---
 const AuthContext = createContext<AuthState>({} as AuthState);
@@ -157,12 +158,12 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b shadow-lg bg-slate-900 border-slate-800">
+      <nav className="sticky top-0 z-50 border-b shadow-lg bg-slate-950/80 backdrop-blur-xl border-white/10">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between py-3 md:py-0 md:h-16">
             <div className="flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-1 text-2xl italic font-black tracking-tighter text-white">
-                <span className="text-fortnite-yellow">Fortinat</span>-shop
+              <Link to="/" className="flex items-center gap-1 text-xl italic font-black tracking-tighter text-white">
+                <span className="text-fortnite-yellow">FORTNITE</span><span className="text-fortnite-blue">VAULT</span>
               </Link>
               {/* Desktop Navigation Links */}
               <div className="items-baseline hidden space-x-2 md:flex">
@@ -240,7 +241,7 @@ const Navbar = () => {
 
 // --- Pages ---
 
-const CatalogPage = () => {
+const LegacyCatalogPage = () => {
   const [allItems, setAllItems] = useState<Cosmetic[]>([]);
   const [filteredItems, setFilteredItems] = useState<Cosmetic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -448,6 +449,11 @@ const CatalogPage = () => {
       )}
     </div>
   );
+};
+
+const CatalogPage = () => {
+  const { user } = useAuth();
+  return <StoreCatalog ownedIds={user?.inventory || []} />;
 };
 
 const MyItemsPage = () => {
@@ -903,8 +909,8 @@ const App = () => {
               <Route path="/register" element={<AuthPage type="register" />} />
             </Routes>
           </main>
-          <footer className="py-8 text-sm text-center text-gray-500 border-t bg-slate-900 border-slate-800">
-            <p>&copy; 2023 Fortinat-shop. Dados fornecidos por Fortnite-API.</p>
+          <footer className="py-10 text-sm text-center text-gray-500 border-t bg-slate-950 border-white/5">
+            <p>&copy; {new Date().getFullYear()} Fortnite Vault. Dados fornecidos por Fortnite-API.</p>
             <p className="mt-2 text-xs opacity-50">Este projeto não é afiliado à Epic Games.</p>
           </footer>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cosmetic } from '../types';
-import { useAuth, API_BASE_URL_CONST as API_BASE_URL } from '../context/AuthContext';
+import { useAuth, API_BASE_URL_CONST as API_BASE_URL } from './AuthContext';
 import { Badge } from './Badge';
 
 export const CosmeticCard: React.FC<{ item: Cosmetic; showRefund?: boolean }> = ({ item, showRefund = false }) => {

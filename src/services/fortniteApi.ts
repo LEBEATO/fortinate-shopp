@@ -1,8 +1,7 @@
-
-import { Cosmetic } from '../types';
+import { Cosmetic } from '../../types';
 
 const BASE_URL = 'https://fortnite-api.com/v2';
-const CACHE_TTL = 60 * 1000 * 2; // 2 minutos de cache para sincronização
+const CACHE_TTL = 5 * 60 * 1000;
 
 interface CacheEntry<T> {
   data: T;
@@ -13,127 +12,92 @@ let cachedShop: CacheEntry<Cosmetic[]> | null = null;
 let cachedNew: CacheEntry<Cosmetic[]> | null = null;
 let cachedAll: CacheEntry<Cosmetic[]> | null = null;
 
-const isFresh = (cache: CacheEntry<any> | null) => {
-  if (!cache) return false;
-  return (Date.now() - cache.timestamp) < CACHE_TTL;
+const isFresh = <T,>(cache: CacheEntry<T> | null) =>
+  Boolean(cache && Date.now() - cache.timestamp < CACHE_TTL);
+
+const request = async <T,>(path: string): Promise<T> => {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Fortnite-API respondeu com status ${response.status}`);
+  }
+
+  return response.json() as Promise<T>;
 };
 
-const normalizeCosmetic = (item: any): Cosmetic => {
-  // Proteção contra itens nulos
-  if (!item) return {} as Cosmetic;
-
-  const isShopEntry = item.items && Array.isArray(item.items);
-  const core = isShopEntry ? item.items[0] : item;
-  
-  // Se o item core for inválido, retorna um objeto vazio seguro ou ignora
-  if (!core) return {} as Cosmetic;
-
-  const bundleIds = isShopEntry && item.items.length > 1 
-    ? item.items.map((i: any) => i.id) 
-    : [];
-
-  const finalPrice = item.finalPrice || 1200;
-  const regularPrice = item.regularPrice || finalPrice;
-  const isPromotional = finalPrice < regularPrice;
+const normalizeCosmetic = (item: any): Cosmetic | null => {
+  if (!item?.id) return null;
 
   return {
-    id: core.id,
-    name: item.bundleName || core.name || 'Item Desconhecido',
-    description: core.description || 'Sem descrição disponível.',
-    type: core.type || { value: 'unknown', displayValue: 'Desconhecido' },
-    rarity: core.rarity || { value: 'common', displayValue: 'Comum' },
-    images: core.images || { icon: '', smallIcon: '', featured: '' },
-    added: core.added || new Date().toISOString(),
-    price: finalPrice,
-    regularPrice: regularPrice,
-    isOnSale: !!item.finalPrice,
-    isNew: false, 
-    isPromotional: isPromotional,
-    bundleIds: bundleIds.length > 0 ? bundleIds : undefined
+    id: item.id,
+    name: item.name || 'Item sem nome',
+    description: item.description || 'Sem descrição disponível.',
+    type: item.type || { value: 'unknown', displayValue: 'Cosmético', backendValue: '' },
+    rarity: item.rarity || { value: 'common', displayValue: 'Comum', backendValue: '' },
+    images: item.images || { icon: '', smallIcon: '', featured: '', background: '' },
+    added: item.added || new Date(0).toISOString(),
+  };
+};
+
+const normalizeShopEntry = (entry: any): Cosmetic | null => {
+  const core = entry?.brItems?.[0] || entry?.tracks?.[0] || entry?.cars?.[0];
+  const normalized = normalizeCosmetic(core);
+  if (!normalized) return null;
+
+  const bundleIds = Array.isArray(entry.brItems)
+    ? entry.brItems.map((item: any) => item?.id).filter(Boolean)
+    : [];
+
+  return {
+    ...normalized,
+    name: entry.bundle?.name || normalized.name,
+    images: {
+      ...normalized.images,
+      featured:
+        entry.newDisplayAsset?.renderImages?.[0]?.image ||
+        entry.bundle?.image ||
+        normalized.images.featured,
+    },
+    price: Number(entry.finalPrice),
+    regularPrice: Number(entry.regularPrice),
+    isOnSale: true,
+    isPromotional: Number(entry.finalPrice) < Number(entry.regularPrice),
+    bundleIds: bundleIds.length > 1 ? bundleIds : undefined,
+    shopSection: entry.layout?.name || 'Loja de hoje',
+    availableUntil: entry.outDate,
   };
 };
 
 export const FortniteAPI = {
   getShop: async (): Promise<Cosmetic[]> => {
     if (isFresh(cachedShop)) return cachedShop!.data;
-    try {
-      const response = await fetch(`${BASE_URL}/shop/br`);
-      const data = await response.json();
-      
-      // Verifica se data.data existe
-      if (!data || !data.data) return [];
-
-      // A API da loja muda frequentemente de estrutura. Tenta acessar featured e daily.
-      // Uso de Optional Chaining e Default Arrays para segurança
-      const featured = data.data.featured?.entries;
-      const daily = data.data.daily?.entries;
-      const vbuckStore = data.data.vbuckStore?.entries;
-
-      // Junta tudo que for array válido
-      let allEntries: any[] = [];
-      if (Array.isArray(featured)) allEntries = [...allEntries, ...featured];
-      if (Array.isArray(daily)) allEntries = [...allEntries, ...daily];
-      
-      // Se não encontrou nas seções padrão, tenta verificar se data.data.entries existe (algumas versões da API)
-      if (allEntries.length === 0 && Array.isArray(data.data.entries)) {
-        allEntries = data.data.entries;
-      }
-
-      const processed = allEntries
-        .map(normalizeCosmetic)
-        .filter(item => item.id); // Remove itens vazios/inválidos
-
-      cachedShop = { data: processed, timestamp: Date.now() };
-      return processed;
-    } catch (error) {
-      console.error("Failed to fetch shop", error);
-      return [];
-    }
+    const response = await request<{ data?: { entries?: any[] } }>('/shop?lang=pt-BR');
+    const entries = Array.isArray(response.data?.entries) ? response.data.entries : [];
+    const processed = entries.map(normalizeShopEntry).filter(Boolean) as Cosmetic[];
+    cachedShop = { data: processed, timestamp: Date.now() };
+    return processed;
   },
 
   getNewCosmetics: async (): Promise<Cosmetic[]> => {
     if (isFresh(cachedNew)) return cachedNew!.data;
-    try {
-      const response = await fetch(`${BASE_URL}/cosmetics/new`);
-      const data = await response.json();
-      
-      if (!data || !data.data) return [];
-      
-      // Correção crítica: Verifica se data.data.items é um array antes de fazer map
-      const rawItems = data.data.items;
-      const items = Array.isArray(rawItems) ? rawItems : [];
-
-      const processed = items.map((item: any) => ({
-        ...normalizeCosmetic(item),
-        isNew: true
-      })).filter((item: Cosmetic) => item.id);
-      
-      cachedNew = { data: processed, timestamp: Date.now() };
-      return processed;
-    } catch (error) {
-      console.error("Failed to fetch new items", error);
-      return [];
-    }
+    const response = await request<{ data?: { items?: any[] } }>('/cosmetics/new?lang=pt-BR');
+    const items = Array.isArray(response.data?.items) ? response.data.items : [];
+    const processed = items
+      .map(normalizeCosmetic)
+      .filter(Boolean)
+      .map(item => ({ ...item!, isNew: true }));
+    cachedNew = { data: processed, timestamp: Date.now() };
+    return processed;
   },
 
   getAllCosmetics: async (): Promise<Cosmetic[]> => {
     if (isFresh(cachedAll)) return cachedAll!.data;
-    try {
-      const response = await fetch(`${BASE_URL}/cosmetics/br`);
-      const data = await response.json();
-
-      // Correção crítica: Verifica se data.data é um array
-      if (!data || !data.data || !Array.isArray(data.data)) return [];
-
-      const processed = data.data
-        .map(normalizeCosmetic)
-        .filter((item: Cosmetic) => item.id);
-
-      cachedAll = { data: processed, timestamp: Date.now() };
-      return processed;
-    } catch (error) {
-      console.error("Failed to fetch all cosmetics", error);
-      return [];
-    }
-  }
+    const response = await request<{ data?: any[] }>('/cosmetics/br?lang=pt-BR');
+    const items = Array.isArray(response.data) ? response.data : [];
+    const processed = items.map(normalizeCosmetic).filter(Boolean) as Cosmetic[];
+    cachedAll = { data: processed, timestamp: Date.now() };
+    return processed;
+  },
 };
