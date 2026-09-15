@@ -56,9 +56,10 @@ const normalizeShopEntry = (entry: any): Cosmetic | null => {
     images: {
       ...normalized.images,
       featured:
-        entry.newDisplayAsset?.renderImages?.[0]?.image ||
         entry.bundle?.image ||
-        normalized.images.featured,
+        normalized.images.featured ||
+        normalized.images.icon ||
+        entry.newDisplayAsset?.renderImages?.[0]?.image,
     },
     price: Number(entry.finalPrice),
     regularPrice: Number(entry.regularPrice),
@@ -82,8 +83,11 @@ export const FortniteAPI = {
 
   getNewCosmetics: async (): Promise<Cosmetic[]> => {
     if (isFresh(cachedNew)) return cachedNew!.data;
-    const response = await request<{ data?: { items?: any[] } }>('/cosmetics/new?lang=pt-BR');
-    const items = Array.isArray(response.data?.items) ? response.data.items : [];
+    const response = await request<{ data?: { items?: Record<string, any[]> } }>('/cosmetics/new?lang=pt-BR');
+    const groups = response.data?.items && typeof response.data.items === 'object'
+      ? Object.values(response.data.items)
+      : [];
+    const items = groups.flatMap(group => Array.isArray(group) ? group : []);
     const processed = items
       .map(normalizeCosmetic)
       .filter(Boolean)
