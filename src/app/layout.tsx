@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { MotionShell } from "@/components/motion/motion-shell";
 import "./globals.css";
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-BR"><body className={`${geistSans.variable} ${geistMono.variable}`}><MotionShell>{children}</MotionShell></body></html>;
+  return <html lang="pt-BR"><body className={`${geistSans.variable} ${geistMono.variable}`}><Suspense fallback={children}><MotionShell>{children}</MotionShell></Suspense></body></html>;
 }

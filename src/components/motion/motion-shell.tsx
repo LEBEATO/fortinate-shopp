@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -11,6 +11,8 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 export function MotionShell({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
 
   useGSAP(() => {
     const media = gsap.matchMedia();
@@ -80,7 +82,7 @@ export function MotionShell({ children }: { children: ReactNode }) {
     );
 
     return () => media.revert();
-  }, { dependencies: [pathname], revertOnUpdate: true, scope: root });
+  }, { dependencies: [pathname, searchKey], revertOnUpdate: true, scope: root });
 
   return <div ref={root}>{children}</div>;
 }
