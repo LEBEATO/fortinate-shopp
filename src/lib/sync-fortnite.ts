@@ -4,7 +4,8 @@ import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { fetchFortniteSnapshot, type ApiCosmetic, type ApiShopEntry } from "@/lib/fortnite-api";
 
-const BATCH_SIZE = 100;
+const INSERT_BATCH_SIZE = 500;
+const UPDATE_BATCH_SIZE = 100;
 
 function optionalDate(value?: string) {
   if (!value) return null;
@@ -28,8 +29,8 @@ function cosmeticData(item: ApiCosmetic, newIds: Set<string>): Prisma.CosmeticUn
 }
 
 async function inBatches<T>(values: T[], work: (batch: T[]) => Promise<void>) {
-  for (let index = 0; index < values.length; index += BATCH_SIZE) {
-    await work(values.slice(index, index + BATCH_SIZE));
+  for (let index = 0; index < values.length; index += UPDATE_BATCH_SIZE) {
+    await work(values.slice(index, index + UPDATE_BATCH_SIZE));
   }
 }
 
@@ -49,8 +50,28 @@ export async function syncFortniteData() {
       for (const item of entry.brItems ?? []) allCosmetics.set(item.id, item);
     }
 
+    const cosmetics = [...allCosmetics.values()];
     await db.cosmetic.updateMany({ data: { isNew: false } });
-    await inBatches([...allCosmetics.values()], async (batch) => {
+
+    // A primeira sincronização contém milhares de itens. Inserções em lote
+    // evitam uma operação de upsert para cada cosmético e mantêm a função
+    // dentro do tempo de execução da Vercel.
+    for (let index = 0; index < cosmetics.length; index += INSERT_BATCH_SIZE) {
+      const batch = cosmetics.slice(index, index + INSERT_BATCH_SIZE);
+      await db.cosmetic.createMany({
+        data: batch.map((item) => cosmeticData(item, newIds)),
+        skipDuplicates: true,
+      });
+    }
+
+    // Atualiza os itens que mudam com frequência: novidades e ofertas atuais.
+    const activeIds = new Set<string>(newIds);
+    for (const entry of snapshot.shopEntries) {
+      for (const item of entry.brItems ?? []) activeIds.add(item.id);
+    }
+    const activeCosmetics = cosmetics.filter((item) => activeIds.has(item.id));
+    for (let index = 0; index < activeCosmetics.length; index += UPDATE_BATCH_SIZE) {
+      const batch = activeCosmetics.slice(index, index + UPDATE_BATCH_SIZE);
       await db.$transaction(batch.map((item) => {
         const data = cosmeticData(item, newIds);
         return db.cosmetic.upsert({
@@ -59,7 +80,7 @@ export async function syncFortniteData() {
           update: { ...data, externalId: undefined },
         });
       }));
-    });
+    }
 
     const cosmeticRows = await db.cosmetic.findMany({
       where: { externalId: { in: [...allCosmetics.keys()] } },
