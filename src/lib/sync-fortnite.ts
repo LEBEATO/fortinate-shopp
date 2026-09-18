@@ -38,6 +38,12 @@ function offerId(entry: ApiShopEntry) {
   return entry.offerId || entry.devName || `shop-${entry.brItems?.map((item) => item.id).join("-") || "unknown"}`;
 }
 
+function cosmeticImage(item?: ApiCosmetic) {
+  const images = item?.images;
+  if (!images) return null;
+  return images.featured || images.large || images.icon || images.small || images.smallIcon || images.background || Object.values(images.other ?? {}).find(Boolean) || null;
+}
+
 export async function syncFortniteData() {
   const run = await db.syncRun.create({ data: { source: "fortnite-api.com" } });
 
@@ -109,7 +115,7 @@ export async function syncFortniteData() {
               finalPrice: Number(entry.finalPrice) || 0,
               isPromotional: Number(entry.finalPrice) < Number(entry.regularPrice),
               section: entry.layout?.name || null,
-              imageUrl: entry.bundle?.image || entry.newDisplayAsset?.renderImages?.[0]?.image || entry.brItems?.[0]?.images?.featured || entry.brItems?.[0]?.images?.icon || null,
+              imageUrl: entry.bundle?.image || entry.newDisplayAsset?.renderImages?.[0]?.image || cosmeticImage(entry.brItems?.[0]),
               startsAt: optionalDate(entry.inDate),
               endsAt: optionalDate(entry.outDate),
               lastSeenAt: seenAt,
@@ -121,7 +127,7 @@ export async function syncFortniteData() {
               finalPrice: Number(entry.finalPrice) || 0,
               isPromotional: Number(entry.finalPrice) < Number(entry.regularPrice),
               section: entry.layout?.name || null,
-              imageUrl: entry.bundle?.image || entry.newDisplayAsset?.renderImages?.[0]?.image || entry.brItems?.[0]?.images?.featured || entry.brItems?.[0]?.images?.icon || null,
+              imageUrl: entry.bundle?.image || entry.newDisplayAsset?.renderImages?.[0]?.image || cosmeticImage(entry.brItems?.[0]),
               startsAt: optionalDate(entry.inDate),
               endsAt: optionalDate(entry.outDate),
               isActive: true,

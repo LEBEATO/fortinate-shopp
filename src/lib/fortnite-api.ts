@@ -3,7 +3,15 @@ import "server-only";
 const API_URL = "https://fortnite-api.com/v2";
 
 type ApiLabel = { value?: string; displayValue?: string };
-type ApiImages = { icon?: string; smallIcon?: string; featured?: string; other?: Record<string, string> };
+type ApiImages = {
+  icon?: string;
+  smallIcon?: string;
+  featured?: string;
+  large?: string;
+  small?: string;
+  background?: string;
+  other?: Record<string, string>;
+};
 
 export type ApiCosmetic = {
   id: string;

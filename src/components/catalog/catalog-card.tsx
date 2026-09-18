@@ -21,7 +21,14 @@ const rarityGradients: Record<string, string> = {
 function imageUrl(images: unknown) {
   if (!images || typeof images !== "object") return null;
   const data = images as Record<string, unknown>;
-  for (const key of ["featured", "icon", "smallIcon"]) if (typeof data[key] === "string" && data[key]) return data[key] as string;
+  for (const key of ["featured", "large", "icon", "small", "smallIcon", "background"]) {
+    if (typeof data[key] === "string" && data[key]) return data[key] as string;
+  }
+  const other = data.other;
+  if (other && typeof other === "object") {
+    const fallback = Object.values(other as Record<string, unknown>).find((value) => typeof value === "string" && value);
+    if (typeof fallback === "string") return fallback;
+  }
   return null;
 }
 

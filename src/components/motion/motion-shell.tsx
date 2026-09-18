@@ -42,12 +42,18 @@ export function MotionShell({ children }: { children: ReactNode }) {
 
         const cards = gsap.utils.toArray<HTMLElement>("[data-motion-card]");
         if (cards.length) {
+          const side = (element: HTMLElement, fallbackIndex: number) => {
+            const cardIndex = Number(element.dataset.cardIndex ?? fallbackIndex);
+            return cardIndex % 2 === 0 ? -1 : 1;
+          };
+
           gsap.set(cards, {
             autoAlpha: 0,
-            y: desktop ? 58 : 34,
-            scale: desktop ? 0.92 : 0.96,
-            rotationX: desktop ? 8 : 0,
-            transformOrigin: "center bottom",
+            x: (index, element: HTMLElement) => side(element, index) * (desktop ? 110 : 58),
+            y: desktop ? 18 : 10,
+            scale: desktop ? 0.96 : 0.98,
+            rotationY: (index, element: HTMLElement) => side(element, index) * (desktop ? -7 : -3),
+            transformOrigin: "center center",
           });
 
           ScrollTrigger.batch(cards, {
@@ -58,11 +64,12 @@ export function MotionShell({ children }: { children: ReactNode }) {
             onEnter: (batch) => {
               gsap.to(batch, {
                 autoAlpha: 1,
+                x: 0,
                 y: 0,
                 scale: 1,
-                rotationX: 0,
-                duration: desktop ? 0.62 : 0.48,
-                ease: "back.out(1.25)",
+                rotationY: 0,
+                duration: desktop ? 0.68 : 0.52,
+                ease: "power3.out",
                 stagger: 0.08,
                 clearProps: "transform,opacity,visibility",
               });
