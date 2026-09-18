@@ -1,46 +1,40 @@
 {
-  "name": "fortinat-shop",
-  "version": "1.0.0",
+  "name": "fortnite-vault",
+  "version": "2.0.0",
+  "private": true,
   "type": "module",
-  "description": "Fortnite cosmetics marketplace simulator",
-  "main": "src/index.tsx",
+  "description": "Plataforma full stack de cosméticos Fortnite com catálogo, créditos e comunidade.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
-  "keywords": [
-    "react",
-    "fortnite",
-    "shop",
-    "prisma",
-    "neon"
-  ],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^5.10.0",
-    "cors": "^2.8.5",
-    "express": "^5.2.1",
-    "lucide-react": "^0.344.0",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "lucide-react": "^0.544.0",
     "motion": "^13.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^6.22.0"
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.0",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
-    "prisma": "^5.10.0",
+    "prisma": "^6.19.3",
     "tailwindcss": "^3.4.18",
-    "typescript": "^5.3.0",
-    "vite": "^5.1.0"
+    "typescript": "^5.9.2",
+    "vitest": "^5.0.1"
   }
 }

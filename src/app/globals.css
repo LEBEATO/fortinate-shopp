@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html { background: #060914; scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; background: #060914; color: #f8fafc; font-family: var(--font-geist-sans), sans-serif; }
+a { color: inherit; text-decoration: none; }
+
+@keyframes catalog-card-enter { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.catalog-card { animation: catalog-card-enter 420ms cubic-bezier(.2, 0, 0, 1) both; animation-delay: calc(min(var(--card-index), 8) * 45ms); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

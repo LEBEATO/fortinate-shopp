@@ -1,0 +1,26 @@
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: fortnite_vault
+      POSTGRES_USER: fortnite
+      POSTGRES_PASSWORD: fortnite_local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fortnite -d fortnite_vault"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - fortnite_postgres:/var/lib/postgresql/data
+  app:
+    build: .
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://fortnite:fortnite_local@database:5432/fortnite_vault
+      SYNC_SECRET: local-sync-secret-change-me
+    ports:
+      - "3000:3000"
+volumes:
+  fortnite_postgres:

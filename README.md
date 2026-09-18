@@ -1,69 +1,107 @@
-# Fortinat-shop 🛒
+# Fortnite Vault
 
+Aplicação full stack para explorar, comprar e colecionar cosméticos do Fortnite com V-Bucks fictícios. O projeto consome a [Fortnite API](https://fortnite-api.com/), persiste os dados em PostgreSQL e implementa integralmente o desafio técnico proposto.
 
-Uma aplicação web moderna que simula a loja de cosméticos do Fortnite. O projeto permite visualizar o catálogo, filtrar itens, simular compras com V-Bucks fictícios, gerenciar inventário e realizar reembolsos.
+## Funcionalidades
 
-## 🚀 Tecnologias Utilizadas
+- Catálogo público paginado com busca por nome.
+- Filtros por tipo, raridade, período, novidades, loja e promoção.
+- Detalhes completos de cada cosmético e conteúdo de bundles.
+- Sincronização de `/cosmetics/br`, `/cosmetics/new` e `/shop`.
+- Cadastro por e-mail e senha com 10.000 V-Bucks iniciais.
+- Sessão segura em cookie `HttpOnly` e senha protegida com bcrypt.
+- Compra transacional de itens individuais e pacotes.
+- Proteção contra compra duplicada e saldo insuficiente.
+- Inventário privado e histórico de compras/devoluções.
+- Reembolso sem limite de tempo, com restauração integral do saldo.
+- Comunidade pública paginada e perfis com inventário.
+- Interface responsiva, animações e suporte a `prefers-reduced-motion`.
 
-*   **Frontend:** React 19, Tailwind CSS
-*   **Framework:** vite.js (Compatible)
-*   **Banco de Dados:** PostgreSQL (via Neon Tech)
-*   **ORM:** Prisma
-*   **API Externa:** Fortnite-API.com
+## Stack
 
-## ✨ Funcionalidades
+- Next.js 16, React 19 e TypeScript
+- Tailwind CSS
+- PostgreSQL e Prisma ORM
+- Zod e bcryptjs
+- Vitest
+- Docker e Docker Compose
 
-### 🛍️ Catálogo e Loja
-*   **Sincronização Automática:** Os dados são atualizados em tempo real com a API oficial do jogo.
-*   **Filtros Avançados:** Busque por nome, tipo (traje, mochila, etc.), raridade e datas.
-*   **Destaques:** Identificação visual de itens "Novos", "Em Promoção" ou "Na Loja Hoje".
+## Executando localmente
 
-### 👤 Usuário e Economia
-*   **Sistema de V-Bucks:** Todo usuário começa com 10.000 V-Bucks.
-*   **Compra de Pacotes (Bundles):** Ao comprar um pacote, todos os itens inclusos são adicionados ao inventário.
-*   **Reembolso (Refund):** Botão de devolução acessível direto na página do item ou no histórico. Devolve o valor integral.
+Requisitos: Node.js 22+, npm e uma instância PostgreSQL.
 
-### 🔐 Autenticação e Perfil
-*   Login e Cadastro (Simulado no Front / Pronto para Backend).
-*   Histórico detalhado de transações.
-*   Página pública de comunidade listando todos os usuários.
-
-## 🛠️ Como rodar o projeto localmente
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/LEBEATO/fortinate-shopp.git
-    cd fortinat-shop
-    ```
-
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-3.  **Configure o Banco de Dados (Neon):**
-    Crie um arquivo `.env` na raiz:
-    ```env
-    DATABASE_URL="postgresql://user:pass@endpoint.neon.tech/neondb"
-    ```
-
-4.  **Rode a aplicação:**
-    ```bash
-    npm run dev
-    ```
-
-## 📂 Estrutura do Banco de Dados (Prisma)
-
-O projeto utiliza o seguinte schema para persistência no Neon:
-
-```prisma
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  balance   Int      @default(10000)
-  inventory String[] // IDs dos cosméticos
-}
+```bash
+git clone https://github.com/LEBEATO/fortinate-shopp.git
+cd fortinate-shopp
+npm install
 ```
 
----
-Desenvolvido como projeto de portfólio focado em usabilidade e integração de APIs.
+Crie `.env` com base em `.env.example`:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+SYNC_SECRET="um-token-longo-e-aleatorio"
+```
+
+Prepare o banco e inicie a aplicação:
+
+```bash
+npm run db:generate
+npm run db:push
+npm run dev
+```
+
+Acesse `http://localhost:3000`.
+
+## Sincronizando a Fortnite API
+
+Com a aplicação em execução, envie uma requisição autenticada:
+
+```bash
+curl -X POST http://localhost:3000/api/sync \
+  -H "Authorization: Bearer SEU_SYNC_SECRET"
+```
+
+A sincronização atualiza cosméticos, novidades e ofertas atuais. Ofertas ausentes na sincronização seguinte são marcadas como inativas, preservando o histórico.
+
+## Docker
+
+O Compose inicia a aplicação e um PostgreSQL local:
+
+```bash
+docker compose up --build
+```
+
+Depois, sincronize os dados usando o comando da seção anterior e o token configurado em `docker-compose.yml`.
+
+## Qualidade
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
+
+## Decisões técnicas
+
+- **App Router e Server Components:** consultas sensíveis permanecem no servidor e menos JavaScript é enviado ao navegador.
+- **Sessão opaca:** somente um token aleatório fica no cookie; seu hash SHA-256 é armazenado no banco.
+- **Transações serializáveis:** compra, débito, inventário e reembolso são operações atômicas.
+- **Histórico preservado:** ofertas podem ficar inativas sem apagar compras antigas.
+- **Privacidade:** perfis públicos mostram nome e coleção, nunca e-mail ou dados de autenticação.
+- **Sincronização protegida:** o endpoint exige `SYNC_SECRET` comparado em tempo constante.
+
+## Estrutura principal
+
+```text
+src/app/                 Rotas, páginas, Server Actions e endpoint de sync
+src/components/          Componentes de catálogo, autenticação e navegação
+src/lib/auth/            Sessões, validação e segurança
+src/lib/fortnite-api.ts  Cliente da API externa
+src/lib/sync-fortnite.ts Normalização e persistência dos dados
+prisma/schema.prisma     Modelo relacional completo
+```
+
+## Observação
+
+Fortnite e suas marcas pertencem à Epic Games. Este projeto é educacional e utiliza somente créditos fictícios.
