@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BadgeCheck, CalendarDays, Package, ShoppingBag, Sparkles, Tag } from "lucide-react";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
-import { purchaseAction } from "@/app/actions/purchase";
+import { PurchaseButton } from "@/components/catalog/purchase-button";
 import { PurchaseSuccessModal } from "@/components/catalog/purchase-success-modal";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +57,7 @@ export default async function CosmeticDetailPage({ params, searchParams }: PageP
           <div className="mt-auto pt-10">
             {feedback.erro ? <p className="mb-5 rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 font-bold text-rose-300">{feedback.erro === "balance" ? "Saldo insuficiente para esta compra." : feedback.erro === "owned" ? "Você já possui um item desta oferta." : feedback.erro === "unavailable" ? "Esta oferta não está mais disponível." : "Não foi possível concluir a compra."}</p> : null}
             {offer ? <div className="mb-5">{offer.isPromotional ? <span className="mr-3 text-lg text-slate-500 line-through">{offer.regularPrice.toLocaleString("pt-BR")}</span> : null}<span className="text-3xl font-black text-yellow-300">{offer.finalPrice.toLocaleString("pt-BR")} V-Bucks</span></div> : <p className="mb-5 font-semibold text-slate-500">Este item não está disponível na loja agora.</p>}
-            {owned ? <button className="w-full cursor-default rounded-2xl bg-emerald-400/15 px-6 py-4 font-black uppercase text-emerald-300" type="button"><BadgeCheck aria-hidden="true" className="mr-2 inline size-5" /> Item adquirido</button> : offer ? user ? <form action={purchaseAction}><input name="offerId" type="hidden" value={offer.id} /><input name="cosmeticId" type="hidden" value={item.id} /><button className="w-full rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black uppercase text-slate-950 shadow-[0_15px_45px_rgba(253,224,71,.18)] transition hover:-translate-y-1 hover:bg-yellow-200" type="submit">Comprar agora</button></form> : <Link className="block w-full rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black uppercase text-slate-950 transition hover:bg-yellow-200" href="/entrar">Entrar para comprar</Link> : null}
+            {owned ? <button className="w-full cursor-default rounded-2xl bg-emerald-400/15 px-6 py-4 font-black uppercase text-emerald-300" type="button"><BadgeCheck aria-hidden="true" className="mr-2 inline size-5" /> Item adquirido</button> : offer ? user ? <PurchaseButton cosmeticId={item.id} imageUrl={image} itemName={item.name} offerId={offer.id} price={offer.finalPrice} /> : <Link className="block w-full rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black uppercase text-slate-950 transition hover:bg-yellow-200" href="/entrar">Entrar para comprar</Link> : null}
           </div>
         </div>
       </article>
