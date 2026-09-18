@@ -6,6 +6,7 @@ import { ArrowLeft, BadgeCheck, CalendarDays, Package, ShoppingBag, Sparkles, Ta
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { purchaseAction } from "@/app/actions/purchase";
+import { PurchaseSuccessModal } from "@/components/catalog/purchase-success-modal";
 
 export const dynamic = "force-dynamic";
 type PageProps = { params: Promise<{ id: string }>; searchParams: Promise<{ compra?: string; erro?: string }> };
@@ -38,6 +39,7 @@ export default async function CosmeticDetailPage({ params, searchParams }: PageP
   const image = imageUrl(item.images); const offer = item.offerItems[0]?.offer; const owned = Array.isArray(item.owners) && item.owners.length > 0;
 
   return <main className="min-h-screen bg-[radial-gradient(circle_at_20%_10%,rgba(124,58,237,.18),transparent_30%),radial-gradient(circle_at_90%_70%,rgba(37,99,235,.12),transparent_25%),#060914] px-5 py-8 lg:px-8">
+    {feedback.compra === "sucesso" && user && offer ? <PurchaseSuccessModal imageUrl={image} itemName={item.name} price={offer.finalPrice} remainingBalance={user.creditBalance} /> : null}
     <div className="mx-auto max-w-6xl">
       <Link className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-bold text-slate-300 transition hover:bg-white/10" href="/catalogo"><ArrowLeft aria-hidden="true" className="size-4" /> Voltar ao catálogo</Link>
       <article className="mt-7 grid overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/75 shadow-2xl backdrop-blur-xl lg:grid-cols-2">
@@ -53,7 +55,6 @@ export default async function CosmeticDetailPage({ params, searchParams }: PageP
           {item.apiAddedAt ? <p className="mt-6 inline-flex items-center gap-2 text-sm text-slate-500"><CalendarDays aria-hidden="true" className="size-4" /> Adicionado em {item.apiAddedAt.toLocaleDateString("pt-BR")}</p> : null}
           {offer?.items && offer.items.length > 1 ? <div className="mt-7 rounded-2xl border border-white/10 bg-white/[.035] p-5"><h2 className="font-black uppercase">Conteúdo do pacote</h2><ul className="mt-3 space-y-2 text-sm text-slate-300">{offer.items.map(({ cosmetic }) => <li key={cosmetic.id}>• {cosmetic.name}</li>)}</ul></div> : null}
           <div className="mt-auto pt-10">
-            {feedback.compra === "sucesso" ? <p className="mb-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 font-bold text-emerald-300">Compra concluída. O item já está no seu inventário.</p> : null}
             {feedback.erro ? <p className="mb-5 rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 font-bold text-rose-300">{feedback.erro === "balance" ? "Saldo insuficiente para esta compra." : feedback.erro === "owned" ? "Você já possui um item desta oferta." : feedback.erro === "unavailable" ? "Esta oferta não está mais disponível." : "Não foi possível concluir a compra."}</p> : null}
             {offer ? <div className="mb-5">{offer.isPromotional ? <span className="mr-3 text-lg text-slate-500 line-through">{offer.regularPrice.toLocaleString("pt-BR")}</span> : null}<span className="text-3xl font-black text-yellow-300">{offer.finalPrice.toLocaleString("pt-BR")} V-Bucks</span></div> : <p className="mb-5 font-semibold text-slate-500">Este item não está disponível na loja agora.</p>}
             {owned ? <button className="w-full cursor-default rounded-2xl bg-emerald-400/15 px-6 py-4 font-black uppercase text-emerald-300" type="button"><BadgeCheck aria-hidden="true" className="mr-2 inline size-5" /> Item adquirido</button> : offer ? user ? <form action={purchaseAction}><input name="offerId" type="hidden" value={offer.id} /><input name="cosmeticId" type="hidden" value={item.id} /><button className="w-full rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black uppercase text-slate-950 shadow-[0_15px_45px_rgba(253,224,71,.18)] transition hover:-translate-y-1 hover:bg-yellow-200" type="submit">Comprar agora</button></form> : <Link className="block w-full rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black uppercase text-slate-950 transition hover:bg-yellow-200" href="/entrar">Entrar para comprar</Link> : null}
