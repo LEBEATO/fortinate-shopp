@@ -15,7 +15,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="mt-8 space-y-5">
+    <form action={formAction} className="mt-8 space-y-5" data-motion="panel">
       {isRegister ? (
         <label className="block">
           <span className="mb-2 block text-sm font-semibold text-slate-300">Nome</span>
@@ -73,7 +73,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       <button
         disabled={pending}
         type="submit"
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-300 px-5 py-4 font-black uppercase tracking-wide text-slate-950 shadow-[0_12px_45px_rgba(253,224,71,.18)] transition hover:-translate-y-0.5 hover:bg-yellow-200 disabled:cursor-wait disabled:opacity-60"
+        className="motion-button flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-300 px-5 py-4 font-black uppercase tracking-wide text-slate-950 shadow-[0_12px_45px_rgba(253,224,71,.18)] hover:bg-yellow-200 disabled:cursor-wait disabled:opacity-60"
       >
         {pending ? <LoaderCircle aria-hidden="true" className="size-5 animate-spin" /> : null}
         {pending ? "Processando..." : isRegister ? "Criar conta grátis" : "Entrar no Vault"}
@@ -81,7 +81,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       <p className="text-center text-sm text-slate-400">
         {isRegister ? "Já possui uma conta?" : "Ainda não possui uma conta?"}{" "}
-        <Link className="font-bold text-blue-300 hover:text-blue-200" href={isRegister ? "/entrar" : "/cadastro"}>
+        <Link className="motion-button inline-flex font-bold text-blue-300 hover:text-blue-200" href={isRegister ? "/entrar" : "/cadastro"}>
           {isRegister ? "Entrar" : "Cadastre-se"}
         </Link>
       </p>

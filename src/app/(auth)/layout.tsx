@@ -3,12 +3,12 @@ import { Gamepad2, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#060914] px-5 py-8 sm:px-8">
+    <main className="relative min-h-screen overflow-hidden bg-[#060914] px-4 py-4 sm:px-8 sm:py-8">
       <div aria-hidden="true" className="absolute -left-32 top-1/4 size-96 rounded-full bg-violet-600/15 blur-3xl" />
       <div aria-hidden="true" className="absolute -right-32 top-0 size-[30rem] rounded-full bg-blue-500/15 blur-3xl" />
-      <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/75 shadow-2xl backdrop-blur-xl lg:grid-cols-[1.05fr_.95fr]">
+      <div className="relative mx-auto grid min-h-[calc(100dvh-2rem)] max-w-6xl overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/75 shadow-2xl backdrop-blur-xl sm:min-h-[calc(100vh-4rem)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_.95fr]" data-motion="panel">
         <aside className="relative hidden overflow-hidden border-r border-white/10 bg-[linear-gradient(145deg,rgba(37,99,235,.22),rgba(76,29,149,.15)_55%,transparent)] p-12 lg:flex lg:flex-col lg:justify-between">
-          <Link className="flex items-center gap-3 font-black uppercase tracking-tight" href="/">
+          <Link className="motion-button flex items-center gap-3 font-black uppercase tracking-tight" href="/">
             <span className="grid size-11 place-items-center rounded-xl bg-yellow-300 text-slate-950"><Gamepad2 aria-hidden="true" /></span>
             Fortnite Vault
           </Link>
@@ -21,7 +21,7 @@ export default function AuthLayout({ children }: Readonly<{ children: React.Reac
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-400"><ShieldCheck aria-hidden="true" className="size-5 text-emerald-400" /> Senhas protegidas e sessão segura</div>
         </aside>
-        <section className="flex items-center justify-center p-6 sm:p-12">{children}</section>
+        <section className="flex items-center justify-center p-5 sm:p-12">{children}</section>
       </div>
     </main>
   );

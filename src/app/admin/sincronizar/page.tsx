@@ -24,16 +24,16 @@ export default async function SyncCatalogPage() {
 
   return <main className="min-h-screen bg-[radial-gradient(circle_at_85%_0%,rgba(37,99,235,.14),transparent_30%),radial-gradient(circle_at_0%_45%,rgba(124,58,237,.10),transparent_25%),#060914]">
     <AppHeader />
-    <div className="mx-auto max-w-4xl px-5 py-10 lg:px-8 lg:py-14">
-      <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.16em] text-blue-300"><ShieldCheck aria-hidden="true" className="size-4" /> Operação protegida</p>
-      <h1 className="mt-3 text-4xl font-black uppercase italic tracking-[-.04em] sm:text-6xl">Sincronizar catálogo</h1>
-      <p className="mt-4 max-w-2xl leading-7 text-slate-400">Importe cosméticos, novidades, preços e ofertas da Fortnite API para o banco Neon.</p>
+    <div className="page-container max-w-4xl py-8 sm:py-10 lg:py-14">
+      <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-blue-300 sm:text-sm" data-motion="eyebrow"><ShieldCheck aria-hidden="true" className="size-4" /> Operação protegida</p>
+      <h1 className="display-title mt-3 font-black uppercase italic tracking-[-.04em]" data-motion="title">Sincronizar catálogo</h1>
+      <p className="mt-4 max-w-2xl leading-7 text-slate-400" data-motion="copy">Importe cosméticos, novidades, preços e ofertas da Fortnite API para o banco Neon.</p>
 
       <section className="mt-9"><SyncCatalogForm /></section>
 
-      <section className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[.025] p-5 sm:p-7">
+      <section className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/[.025] p-5 sm:p-7" data-motion="panel">
         <div className="flex items-center gap-3"><Clock3 aria-hidden="true" className="size-5 text-slate-400" /><h2 className="text-lg font-black">Últimas execuções</h2></div>
-        {runs.length ? <div className="mt-5 space-y-3">{runs.map((run) => <article className="rounded-xl border border-white/10 bg-slate-950/50 p-4" key={run.id}>
+        {runs.length ? <div className="mt-5 space-y-3">{runs.map((run, index) => <article className="motion-card rounded-xl border border-white/10 bg-slate-950/50 p-4" data-card-index={index} data-motion-card key={run.id}>
           <div className="flex flex-wrap items-center justify-between gap-3"><span className={`rounded-full px-3 py-1 text-xs font-black uppercase ${statusClass[run.status]}`}>{statusLabel[run.status]}</span><time className="text-xs text-slate-500" dateTime={run.startedAt.toISOString()}>{run.startedAt.toLocaleString("pt-BR")}</time></div>
           <p className="mt-3 text-sm text-slate-300">{run.itemCount.toLocaleString("pt-BR")} registros processados</p>
           {run.error ? <p className="mt-2 break-words text-sm text-rose-300">{run.error}</p> : null}

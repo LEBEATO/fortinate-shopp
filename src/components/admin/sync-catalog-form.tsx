@@ -54,7 +54,7 @@ export function SyncCatalogForm() {
 
   const running = feedback.kind === "running";
 
-  return <div className="rounded-[1.6rem] border border-white/10 bg-white/[.035] p-5 shadow-2xl sm:p-7">
+  return <div className="rounded-[1.6rem] border border-white/10 bg-white/[.035] p-5 shadow-2xl sm:p-7" data-motion="panel">
     <div className="flex items-start gap-4">
       <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-blue-500/15 text-blue-300"><DatabaseZap aria-hidden="true" className="size-6" /></span>
       <div><h2 className="text-xl font-black">Importar dados da Fortnite API</h2><p className="mt-1 text-sm leading-6 text-slate-400">A primeira execução pode levar alguns minutos. Mantenha esta página aberta até aparecer o resultado.</p></div>
@@ -62,7 +62,7 @@ export function SyncCatalogForm() {
 
     <form className="mt-7" onSubmit={handleSubmit}>
       <p className="text-sm leading-6 text-slate-400">Sua sessão autenticada será usada para autorizar esta operação.</p>
-      <button className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-500 px-5 font-black uppercase text-white transition hover:bg-blue-400 disabled:cursor-wait disabled:opacity-70 sm:w-auto" disabled={running} type="submit">
+      <button className="motion-button mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-500 px-5 font-black uppercase text-white hover:bg-blue-400 disabled:cursor-wait disabled:opacity-70 sm:w-auto" disabled={running} type="submit">
         {running ? <LoaderCircle aria-hidden="true" className="size-5 animate-spin" /> : <DatabaseZap aria-hidden="true" className="size-5" />}
         {running ? "Sincronizando catálogo..." : "Sincronizar catálogo"}
       </button>

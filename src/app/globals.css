@@ -8,9 +8,30 @@ html { background: #060914; scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; background: #060914; color: #f8fafc; font-family: var(--font-geist-sans), sans-serif; }
 a { color: inherit; text-decoration: none; }
 
-@keyframes catalog-card-enter { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.catalog-card { animation: catalog-card-enter 420ms cubic-bezier(.2, 0, 0, 1) both; animation-delay: calc(min(var(--card-index), 8) * 45ms); }
+body { overflow-x: hidden; }
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+
+.page-container { width: 100%; max-width: 90rem; margin-inline: auto; padding-inline: clamp(1rem, 3vw, 2rem); }
+.display-title { font-size: clamp(2.35rem, 6vw, 4.75rem); line-height: .92; overflow-wrap: anywhere; }
+.motion-button { transition: transform 160ms cubic-bezier(.2,0,0,1), background-color 160ms ease, border-color 160ms ease, box-shadow 220ms ease, color 160ms ease; }
+.motion-button:hover { transform: translateY(-2px); }
+.motion-button:active { transform: translateY(1px) scale(.975); }
+.motion-card { transition: transform 280ms cubic-bezier(.2,0,0,1), border-color 220ms ease, box-shadow 280ms ease, background-color 220ms ease; }
+.motion-card:hover { transform: translateY(-6px); }
+.motion-icon { transition: transform 220ms cubic-bezier(.2,0,0,1); }
+.group:hover .motion-icon, .motion-button:hover .motion-icon { transform: translateX(3px) scale(1.04); }
+.product-float { animation: product-float 4.8s ease-in-out infinite; will-change: transform; }
+
+@keyframes product-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+
+.catalog-card { will-change: transform; }
+
+@media (max-width: 639px) {
+  .page-container { padding-inline: 1rem; }
+  .motion-button:hover, .motion-card:hover { transform: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .product-float { animation: none; }
 }
