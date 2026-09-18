@@ -17,21 +17,28 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 .motion-button:hover { transform: translateY(-2px); }
 .motion-button:active { transform: translateY(1px) scale(.975); }
 .motion-card { transition: transform 280ms cubic-bezier(.2,0,0,1), border-color 220ms ease, box-shadow 280ms ease, background-color 220ms ease; }
-.motion-card:hover { transform: translateY(-6px); }
+.motion-card:hover { transform: perspective(1000px) translateY(-9px) rotateX(2deg) scale(1.012); }
 .motion-icon { transition: transform 220ms cubic-bezier(.2,0,0,1); }
 .group:hover .motion-icon, .motion-button:hover .motion-icon { transform: translateX(3px) scale(1.04); }
 .product-float { animation: product-float 4.8s ease-in-out infinite; will-change: transform; }
 
 @keyframes product-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
 
-.catalog-card { will-change: transform; }
+.catalog-card { position: relative; will-change: transform; }
+.catalog-card::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.11) 45%, transparent 65%); transform: translateX(-130%); transition: transform 650ms cubic-bezier(.2,0,0,1); }
+.catalog-card:hover::after { transform: translateX(130%); }
+.card-glow { transition: opacity 280ms ease, transform 420ms cubic-bezier(.2,0,0,1); }
+.catalog-card:hover .card-glow { opacity: 1; transform: scale(1.18); }
+.card-badge { animation: badge-breathe 2.4s ease-in-out infinite; }
 
 @media (max-width: 639px) {
   .page-container { padding-inline: 1rem; }
   .motion-button:hover, .motion-card:hover { transform: none; }
 }
+@keyframes badge-breathe { 0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,.18); } 50% { box-shadow: 0 0 0 7px rgba(59,130,246,0); } }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .product-float { animation: none; }
+  .card-badge { animation: none; }
 }

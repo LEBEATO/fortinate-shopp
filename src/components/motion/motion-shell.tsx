@@ -3,9 +3,10 @@
 import { useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export function MotionShell({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
@@ -41,15 +42,31 @@ export function MotionShell({ children }: { children: ReactNode }) {
 
         const cards = gsap.utils.toArray<HTMLElement>("[data-motion-card]");
         if (cards.length) {
-          gsap.from(cards, {
+          gsap.set(cards, {
             autoAlpha: 0,
-            y: desktop ? 28 : 18,
-            scale: 0.985,
-            duration: 0.46,
-            ease: "power3.out",
-            stagger: { amount: Math.min(0.42, cards.length * 0.035), from: "start" },
-            delay: 0.18,
-            clearProps: "transform,opacity,visibility",
+            y: desktop ? 58 : 34,
+            scale: desktop ? 0.92 : 0.96,
+            rotationX: desktop ? 8 : 0,
+            transformOrigin: "center bottom",
+          });
+
+          ScrollTrigger.batch(cards, {
+            start: "top 90%",
+            once: true,
+            interval: 0.1,
+            batchMax: desktop ? 4 : 2,
+            onEnter: (batch) => {
+              gsap.to(batch, {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                rotationX: 0,
+                duration: desktop ? 0.62 : 0.48,
+                ease: "back.out(1.25)",
+                stagger: 0.08,
+                clearProps: "transform,opacity,visibility",
+              });
+            },
           });
         }
       },
