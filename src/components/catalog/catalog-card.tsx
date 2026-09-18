@@ -36,7 +36,7 @@ export function CatalogCard({ item, index }: CatalogCardProps) {
   const image = imageUrl(item.images);
   return (
     <Link href={`/catalogo/${item.id}`} data-card-index={index} data-motion-card className="catalog-card motion-card group flex min-h-[23rem] flex-col overflow-hidden rounded-[1.4rem] border border-white/10 bg-slate-950/80 shadow-[0_18px_60px_rgba(0,0,0,.24)] hover:border-blue-400/40 hover:shadow-[0_28px_80px_rgba(37,99,235,.18)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-400/30 sm:min-h-[26rem] sm:rounded-[1.6rem]">
-      <div className={`relative aspect-square overflow-hidden bg-gradient-to-b ${rarityGradients[item.rarity] ?? rarityGradients.common}`}>
+      <div className={`relative aspect-square overflow-hidden bg-gradient-to-b ${rarityGradients[item.rarity] ?? rarityGradients.common}`} data-card-media>
         <div aria-hidden="true" className="card-glow absolute left-1/2 top-1/2 size-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-400/20 opacity-40 blur-3xl" />
         <div aria-hidden="true" className="absolute inset-x-8 bottom-2 h-8 rounded-full bg-black/50 blur-xl transition-transform duration-300 group-hover:scale-110" />
         {image ? <Image alt={item.name} className="object-contain p-3 transition-transform duration-500 ease-[cubic-bezier(.2,0,0,1)] group-hover:-translate-y-2 group-hover:scale-[1.14] group-hover:rotate-1" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" src={image} /> : <div className="grid h-full place-items-center text-slate-600"><Package aria-hidden="true" className="size-16" /></div>}
@@ -48,10 +48,10 @@ export function CatalogCard({ item, index }: CatalogCardProps) {
         {item.owned ? <span className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-emerald-400 text-slate-950 shadow-lg" title="Você possui este item"><BadgeCheck aria-label="Adquirido" className="size-5" /></span> : null}
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-wider text-slate-500"><span>{item.typeLabel}</span><span>{item.rarityLabel}</span></div>
-        <h2 className="mt-3 text-xl font-black tracking-tight text-white transition-colors group-hover:text-blue-200">{item.name}</h2>
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400">{item.description || "Sem descrição disponível."}</p>
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+        <div className="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-wider text-slate-500" data-card-copy><span>{item.typeLabel}</span><span>{item.rarityLabel}</span></div>
+        <h2 className="mt-3 text-xl font-black tracking-tight text-white transition-colors group-hover:text-blue-200" data-card-copy>{item.name}</h2>
+        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-400" data-card-copy>{item.description || "Sem descrição disponível."}</p>
+        <div className="mt-auto flex items-end justify-between gap-3 pt-5" data-card-copy>
           {item.offer ? <div>{item.offer.isPromotional ? <span className="block text-xs text-slate-500 line-through">{item.offer.regularPrice.toLocaleString("pt-BR")}</span> : null}<span className="font-black text-yellow-300">{item.offer.finalPrice.toLocaleString("pt-BR")} V-Bucks</span></div> : <span className="text-sm font-semibold text-slate-500">Fora da loja</span>}
           <span className="motion-icon hidden text-sm font-bold text-blue-300 opacity-0 transition-opacity group-hover:opacity-100 sm:inline">Ver detalhes →</span>
         </div>
