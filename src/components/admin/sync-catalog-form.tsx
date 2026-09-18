@@ -19,27 +19,20 @@ type Feedback =
 
 export function SyncCatalogForm() {
   const router = useRouter();
-  const [secret, setSecret] = useState("");
   const [feedback, setFeedback] = useState<Feedback>({ kind: "idle" });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!secret.trim()) {
-      setFeedback({ kind: "error", message: "Digite o SYNC_SECRET configurado na Vercel." });
-      return;
-    }
-
     setFeedback({ kind: "running" });
     try {
       const response = await fetch("/api/sync", {
         method: "POST",
-        headers: { Authorization: `Bearer ${secret}` },
       });
       const body = (await response.json().catch(() => null)) as ({ error?: string } & Partial<SyncResult>) | null;
 
       if (!response.ok) {
         const message = response.status === 401
-          ? "SYNC_SECRET incorreto ou indisponível neste ambiente da Vercel."
+          ? "Sua sessão expirou. Entre novamente e tente outra vez."
           : body?.error || "A sincronização falhou. Consulte o histórico abaixo.";
         setFeedback({ kind: "error", message });
         return;
@@ -56,8 +49,6 @@ export function SyncCatalogForm() {
       router.refresh();
     } catch {
       setFeedback({ kind: "error", message: "A conexão foi interrompida antes do fim da sincronização." });
-    } finally {
-      setSecret("");
     }
   }
 
@@ -70,19 +61,7 @@ export function SyncCatalogForm() {
     </div>
 
     <form className="mt-7" onSubmit={handleSubmit}>
-      <label className="block text-sm font-bold text-slate-300" htmlFor="sync-secret">SYNC_SECRET</label>
-      <input
-        autoComplete="off"
-        className="mt-2 h-12 w-full rounded-xl border border-white/10 bg-slate-950/80 px-4 outline-none transition placeholder:text-slate-600 focus:border-blue-400/60 focus:ring-4 focus:ring-blue-400/10"
-        disabled={running}
-        id="sync-secret"
-        onChange={(event) => setSecret(event.target.value)}
-        placeholder="Digite a senha configurada na Vercel"
-        required
-        type="password"
-        value={secret}
-      />
-      <p className="mt-2 text-xs text-slate-500">O valor é usado somente nesta requisição e não é salvo no navegador.</p>
+      <p className="text-sm leading-6 text-slate-400">Sua sessão autenticada será usada para autorizar esta operação.</p>
       <button className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-500 px-5 font-black uppercase text-white transition hover:bg-blue-400 disabled:cursor-wait disabled:opacity-70 sm:w-auto" disabled={running} type="submit">
         {running ? <LoaderCircle aria-hidden="true" className="size-5 animate-spin" /> : <DatabaseZap aria-hidden="true" className="size-5" />}
         {running ? "Sincronizando catálogo..." : "Sincronizar catálogo"}
