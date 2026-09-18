@@ -27,20 +27,21 @@ export function MotionShell({ children }: { children: ReactNode }) {
           desktop: boolean;
           reduceMotion: boolean;
         };
-        const animated = "[data-motion='eyebrow'], [data-motion='title'], [data-motion='copy'], [data-motion='panel'], [data-motion-card]";
+        const pageElements = "[data-motion='eyebrow'], [data-motion='title'], [data-motion='copy'], [data-motion='panel']";
 
         if (reduceMotion) {
-          gsap.set(animated, { clearProps: "all" });
-          return;
+          gsap.set(pageElements, { clearProps: "all" });
         }
 
-        const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-        timeline
-          .from("[data-motion='header']", { autoAlpha: 0, y: -14, duration: 0.38 })
-          .from("[data-motion='eyebrow']", { autoAlpha: 0, y: 12, duration: 0.34 })
-          .from("[data-motion='title']", { autoAlpha: 0, x: desktop ? -28 : -14, duration: 0.5 }, "-=0.2")
-          .from("[data-motion='copy']", { autoAlpha: 0, y: 14, duration: 0.4 }, "-=0.27")
-          .from("[data-motion='panel']", { autoAlpha: 0, y: 20, scale: 0.99, duration: 0.46 }, "-=0.2");
+        if (!reduceMotion) {
+          const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+          timeline
+            .from("[data-motion='header']", { autoAlpha: 0, y: -14, duration: 0.38 })
+            .from("[data-motion='eyebrow']", { autoAlpha: 0, y: 12, duration: 0.34 })
+            .from("[data-motion='title']", { autoAlpha: 0, x: desktop ? -28 : -14, duration: 0.5 }, "-=0.2")
+            .from("[data-motion='copy']", { autoAlpha: 0, y: 14, duration: 0.4 }, "-=0.27")
+            .from("[data-motion='panel']", { autoAlpha: 0, y: 20, scale: 0.99, duration: 0.46 }, "-=0.2");
+        }
 
         const cards = gsap.utils.toArray<HTMLElement>("[data-motion-card]");
         if (cards.length) {
@@ -51,18 +52,19 @@ export function MotionShell({ children }: { children: ReactNode }) {
 
           gsap.set(cards, {
             autoAlpha: 0,
-            x: (index, element: HTMLElement) => side(element, index) * (desktop ? 110 : 58),
-            y: desktop ? 18 : 10,
-            scale: desktop ? 0.96 : 0.98,
-            rotationY: (index, element: HTMLElement) => side(element, index) * (desktop ? -7 : -3),
+            x: (index, element: HTMLElement) => side(element, index) * (reduceMotion ? 40 : desktop ? 150 : 105),
+            y: reduceMotion ? 0 : desktop ? 18 : 12,
+            scale: reduceMotion ? 1 : desktop ? 0.95 : 0.97,
+            rotationY: (index, element: HTMLElement) => side(element, index) * (reduceMotion ? 0 : desktop ? -8 : -5),
+            rotationZ: (index, element: HTMLElement) => side(element, index) * (reduceMotion ? 0 : desktop ? -1.5 : -2),
             transformOrigin: "center center",
           });
 
           ScrollTrigger.batch(cards, {
-            start: "top 90%",
+            start: "top 82%",
             once: true,
-            interval: 0.1,
-            batchMax: desktop ? 4 : 2,
+            interval: 0.12,
+            batchMax: desktop ? 2 : 1,
             onEnter: (batch) => {
               gsap.to(batch, {
                 autoAlpha: 1,
@@ -70,9 +72,10 @@ export function MotionShell({ children }: { children: ReactNode }) {
                 y: 0,
                 scale: 1,
                 rotationY: 0,
-                duration: desktop ? 0.68 : 0.52,
+                rotationZ: 0,
+                duration: reduceMotion ? 0.28 : desktop ? 0.76 : 0.82,
                 ease: "power3.out",
-                stagger: 0.08,
+                stagger: 0.12,
                 clearProps: "transform,opacity,visibility",
               });
             },
