@@ -76,38 +76,32 @@ export function MotionShell({ children }: { children: ReactNode }) {
             return cardIndex % 2 === 0 ? -1 : 1;
           };
 
-          gsap.set(cards, {
-            autoAlpha: 0,
-            x: (index, element: HTMLElement) => side(element, index) * (desktop ? 150 : 42),
-            y: desktop ? 18 : 8,
-            scale: desktop ? 0.95 : 0.97,
-            rotationY: (index, element: HTMLElement) => side(element, index) * (desktop ? -8 : -2),
-            rotationZ: (index, element: HTMLElement) => side(element, index) * (desktop ? -1.5 : -0.6),
-            transformOrigin: "center center",
-          });
-
           cards.forEach((cardElement, index) => {
             const cardSide = side(cardElement, index);
             const mediaElement = cardElement.querySelector<HTMLElement>("[data-card-media]");
             const copyElements = cardElement.querySelectorAll<HTMLElement>("[data-card-copy]");
+
+            // Keep cards visible by default. This prevents narrow/mobile browsers
+            // from leaving the catalog blank if ScrollTrigger initializes late.
+            gsap.set(cardElement, { autoAlpha: 1 });
+
             const cardTimeline = gsap.timeline({
               scrollTrigger: {
                 trigger: cardElement,
-                start: desktop ? "top 86%" : "top 96%",
+                start: desktop ? "top 86%" : "top 98%",
                 once: true,
               },
             });
 
-            cardTimeline.to(cardElement, {
-              autoAlpha: 1,
-              x: 0,
-              y: 0,
-              scale: 1,
-              rotationY: 0,
-              rotationZ: 0,
-              duration: desktop ? 0.76 : 0.72,
+            cardTimeline.from(cardElement, {
+              x: cardSide * (desktop ? 150 : 34),
+              y: desktop ? 18 : 6,
+              scale: desktop ? 0.95 : 0.985,
+              rotationY: cardSide * (desktop ? -8 : -1),
+              rotationZ: cardSide * (desktop ? -1.5 : -0.35),
+              duration: desktop ? 0.76 : 0.58,
               ease: "power3.out",
-              clearProps: "transform,opacity,visibility",
+              clearProps: "transform",
             });
 
             if (mediaElement) {
@@ -115,13 +109,13 @@ export function MotionShell({ children }: { children: ReactNode }) {
                 mediaElement,
                 {
                   autoAlpha: 0,
-                  scale: 0.78,
-                  rotation: cardSide * -4,
-                  duration: 0.48,
-                  ease: "back.out(1.35)",
+                  scale: desktop ? 0.78 : 0.92,
+                  rotation: cardSide * (desktop ? -4 : -1),
+                  duration: desktop ? 0.48 : 0.36,
+                  ease: "back.out(1.25)",
                   clearProps: "transform,opacity,visibility",
                 },
-                "-=0.5",
+                "-=0.4",
               );
             }
 
@@ -130,14 +124,14 @@ export function MotionShell({ children }: { children: ReactNode }) {
                 copyElements,
                 {
                   autoAlpha: 0,
-                  x: cardSide * (desktop ? 26 : 16),
-                  y: 12,
-                  duration: 0.4,
+                  x: cardSide * (desktop ? 26 : 12),
+                  y: desktop ? 12 : 6,
+                  duration: desktop ? 0.4 : 0.32,
                   ease: "power2.out",
-                  stagger: 0.07,
+                  stagger: 0.055,
                   clearProps: "transform,opacity,visibility",
                 },
-                "-=0.32",
+                "-=0.28",
               );
             }
           });
@@ -164,7 +158,10 @@ export function MotionShell({ children }: { children: ReactNode }) {
           );
         });
 
-        requestAnimationFrame(() => ScrollTrigger.refresh());
+        requestAnimationFrame(() => {
+          ScrollTrigger.refresh();
+          if (!desktop) gsap.set("[data-motion-card]", { autoAlpha: 1 });
+        });
       },
     );
 
