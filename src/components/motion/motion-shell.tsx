@@ -69,62 +69,8 @@ export function MotionShell({ children }: { children: ReactNode }) {
           );
         });
 
-        const cards = gsap.utils.toArray<HTMLElement>("[data-motion-card]");
-        cards.forEach((cardElement) => {
-          const mediaElement = cardElement.querySelector<HTMLElement>("[data-card-media]");
-          const copyElements = cardElement.querySelectorAll<HTMLElement>("[data-card-copy]");
-
-          // Scroll reveal: cards rise softly into view instead of entering from the sides.
-          const cardTimeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: cardElement,
-              start: desktop ? "top 88%" : "top 94%",
-              once: true,
-            },
-          });
-
-          cardTimeline.fromTo(
-            cardElement,
-            { autoAlpha: 0, y: desktop ? 42 : 28, scale: 0.975 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: desktop ? 0.68 : 0.52,
-              ease: "power3.out",
-              clearProps: "transform,opacity,visibility",
-            },
-          );
-
-          if (mediaElement) {
-            cardTimeline.from(
-              mediaElement,
-              {
-                autoAlpha: 0,
-                scale: 0.94,
-                duration: 0.38,
-                ease: "power2.out",
-                clearProps: "transform,opacity,visibility",
-              },
-              "-=0.38",
-            );
-          }
-
-          if (copyElements.length) {
-            cardTimeline.from(
-              copyElements,
-              {
-                autoAlpha: 0,
-                y: 12,
-                duration: 0.32,
-                ease: "power2.out",
-                stagger: 0.055,
-                clearProps: "transform,opacity,visibility",
-              },
-              "-=0.26",
-            );
-          }
-        });
+        // Catalog cards stay visible and static. Motion is reserved for page text and controls.
+        gsap.set("[data-motion-card]", { clearProps: "all" });
 
         const buttons = gsap.utils.toArray<HTMLElement>(".motion-button");
         buttons.forEach((button) => {
@@ -147,14 +93,7 @@ export function MotionShell({ children }: { children: ReactNode }) {
           );
         });
 
-        requestAnimationFrame(() => {
-          ScrollTrigger.refresh();
-          if (!desktop) {
-            gsap.utils.toArray<HTMLElement>("[data-motion-card]").forEach((card) => {
-              if (card.getBoundingClientRect().top < window.innerHeight) gsap.set(card, { autoAlpha: 1 });
-            });
-          }
-        });
+        requestAnimationFrame(() => ScrollTrigger.refresh());
       },
     );
 
