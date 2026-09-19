@@ -70,72 +70,61 @@ export function MotionShell({ children }: { children: ReactNode }) {
         });
 
         const cards = gsap.utils.toArray<HTMLElement>("[data-motion-card]");
-        if (cards.length) {
-          const side = (element: HTMLElement, fallbackIndex: number) => {
-            const cardIndex = Number(element.dataset.cardIndex ?? fallbackIndex);
-            return cardIndex % 2 === 0 ? -1 : 1;
-          };
+        cards.forEach((cardElement) => {
+          const mediaElement = cardElement.querySelector<HTMLElement>("[data-card-media]");
+          const copyElements = cardElement.querySelectorAll<HTMLElement>("[data-card-copy]");
 
-          cards.forEach((cardElement, index) => {
-            const cardSide = side(cardElement, index);
-            const mediaElement = cardElement.querySelector<HTMLElement>("[data-card-media]");
-            const copyElements = cardElement.querySelectorAll<HTMLElement>("[data-card-copy]");
-
-            // Keep cards visible by default. This prevents narrow/mobile browsers
-            // from leaving the catalog blank if ScrollTrigger initializes late.
-            gsap.set(cardElement, { autoAlpha: 1 });
-
-            const cardTimeline = gsap.timeline({
-              scrollTrigger: {
-                trigger: cardElement,
-                start: desktop ? "top 86%" : "top 98%",
-                once: true,
-              },
-            });
-
-            cardTimeline.from(cardElement, {
-              x: cardSide * (desktop ? 150 : 34),
-              y: desktop ? 18 : 6,
-              scale: desktop ? 0.95 : 0.985,
-              rotationY: cardSide * (desktop ? -8 : -1),
-              rotationZ: cardSide * (desktop ? -1.5 : -0.35),
-              duration: desktop ? 0.76 : 0.58,
-              ease: "power3.out",
-              clearProps: "transform",
-            });
-
-            if (mediaElement) {
-              cardTimeline.from(
-                mediaElement,
-                {
-                  autoAlpha: 0,
-                  scale: desktop ? 0.78 : 0.92,
-                  rotation: cardSide * (desktop ? -4 : -1),
-                  duration: desktop ? 0.48 : 0.36,
-                  ease: "back.out(1.25)",
-                  clearProps: "transform,opacity,visibility",
-                },
-                "-=0.4",
-              );
-            }
-
-            if (copyElements.length) {
-              cardTimeline.from(
-                copyElements,
-                {
-                  autoAlpha: 0,
-                  x: cardSide * (desktop ? 26 : 12),
-                  y: desktop ? 12 : 6,
-                  duration: desktop ? 0.4 : 0.32,
-                  ease: "power2.out",
-                  stagger: 0.055,
-                  clearProps: "transform,opacity,visibility",
-                },
-                "-=0.28",
-              );
-            }
+          // Scroll reveal: cards rise softly into view instead of entering from the sides.
+          const cardTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: cardElement,
+              start: desktop ? "top 88%" : "top 94%",
+              once: true,
+            },
           });
-        }
+
+          cardTimeline.fromTo(
+            cardElement,
+            { autoAlpha: 0, y: desktop ? 42 : 28, scale: 0.975 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: desktop ? 0.68 : 0.52,
+              ease: "power3.out",
+              clearProps: "transform,opacity,visibility",
+            },
+          );
+
+          if (mediaElement) {
+            cardTimeline.from(
+              mediaElement,
+              {
+                autoAlpha: 0,
+                scale: 0.94,
+                duration: 0.38,
+                ease: "power2.out",
+                clearProps: "transform,opacity,visibility",
+              },
+              "-=0.38",
+            );
+          }
+
+          if (copyElements.length) {
+            cardTimeline.from(
+              copyElements,
+              {
+                autoAlpha: 0,
+                y: 12,
+                duration: 0.32,
+                ease: "power2.out",
+                stagger: 0.055,
+                clearProps: "transform,opacity,visibility",
+              },
+              "-=0.26",
+            );
+          }
+        });
 
         const buttons = gsap.utils.toArray<HTMLElement>(".motion-button");
         buttons.forEach((button) => {
@@ -160,7 +149,11 @@ export function MotionShell({ children }: { children: ReactNode }) {
 
         requestAnimationFrame(() => {
           ScrollTrigger.refresh();
-          if (!desktop) gsap.set("[data-motion-card]", { autoAlpha: 1 });
+          if (!desktop) {
+            gsap.utils.toArray<HTMLElement>("[data-motion-card]").forEach((card) => {
+              if (card.getBoundingClientRect().top < window.innerHeight) gsap.set(card, { autoAlpha: 1 });
+            });
+          }
         });
       },
     );
