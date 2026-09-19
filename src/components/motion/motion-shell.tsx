@@ -20,10 +20,12 @@ export function MotionShell({ children }: { children: ReactNode }) {
     media.add(
       {
         desktop: "(min-width: 768px)",
+        mobile: "(max-width: 767px)",
       },
       (context) => {
         const { desktop } = context.conditions as {
           desktop: boolean;
+          mobile: boolean;
         };
         gsap.from("[data-motion='header']", {
           autoAlpha: 0,
