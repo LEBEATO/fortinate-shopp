@@ -78,11 +78,11 @@ export function MotionShell({ children }: { children: ReactNode }) {
 
           gsap.set(cards, {
             autoAlpha: 0,
-            x: (index, element: HTMLElement) => side(element, index) * (desktop ? 150 : 105),
-            y: desktop ? 18 : 12,
+            x: (index, element: HTMLElement) => side(element, index) * (desktop ? 150 : 42),
+            y: desktop ? 18 : 8,
             scale: desktop ? 0.95 : 0.97,
-            rotationY: (index, element: HTMLElement) => side(element, index) * (desktop ? -8 : -5),
-            rotationZ: (index, element: HTMLElement) => side(element, index) * (desktop ? -1.5 : -2),
+            rotationY: (index, element: HTMLElement) => side(element, index) * (desktop ? -8 : -2),
+            rotationZ: (index, element: HTMLElement) => side(element, index) * (desktop ? -1.5 : -0.6),
             transformOrigin: "center center",
           });
 
@@ -93,7 +93,7 @@ export function MotionShell({ children }: { children: ReactNode }) {
             const cardTimeline = gsap.timeline({
               scrollTrigger: {
                 trigger: cardElement,
-                start: desktop ? "top 86%" : "top 90%",
+                start: desktop ? "top 86%" : "top 96%",
                 once: true,
               },
             });
@@ -130,7 +130,7 @@ export function MotionShell({ children }: { children: ReactNode }) {
                 copyElements,
                 {
                   autoAlpha: 0,
-                  x: cardSide * 26,
+                  x: cardSide * (desktop ? 26 : 16),
                   y: 12,
                   duration: 0.4,
                   ease: "power2.out",
@@ -164,7 +164,7 @@ export function MotionShell({ children }: { children: ReactNode }) {
           );
         });
 
-        ScrollTrigger.refresh();
+        requestAnimationFrame(() => ScrollTrigger.refresh());
       },
     );
 
