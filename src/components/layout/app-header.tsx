@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Gamepad2, History, PackageOpen, UserRound, UsersRound, WalletCards } from "lucide-react";
+import { Gamepad2, History, LogOut, PackageOpen, UserRound, UsersRound, WalletCards } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/session";
+import { logoutAction } from "@/app/actions/auth";
 
 export async function AppHeader() {
   const user = await getCurrentUser();
@@ -12,7 +13,7 @@ export async function AppHeader() {
         <Link aria-label="Comunidade" className="motion-button inline-flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/5 hover:text-white sm:px-3" href="/comunidade"><UsersRound aria-hidden="true" className="size-4" /><span className="hidden md:inline">Comunidade</span></Link>
         {user ? <><Link aria-label="Inventário" className="motion-button inline-flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/5 hover:text-white sm:px-3" href="/inventario"><PackageOpen aria-hidden="true" className="size-4" /><span className="hidden md:inline">Inventário</span></Link><Link aria-label="Histórico" className="motion-button inline-flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/5 hover:text-white sm:px-3" href="/historico"><History aria-hidden="true" className="size-4" /><span className="hidden md:inline">Histórico</span></Link></> : null}
       </nav>
-      <div className="flex shrink-0 items-center gap-2">{user ? <><span className="hidden items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm font-bold text-yellow-300 lg:flex"><WalletCards aria-hidden="true" className="size-4" />{user.creditBalance.toLocaleString("pt-BR")}</span><Link className="motion-button grid size-9 place-items-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 sm:size-10" href={`/comunidade/${user.id}`} aria-label="Meu perfil público"><UserRound aria-hidden="true" className="size-5" /></Link></> : <Link className="motion-button rounded-xl bg-yellow-300 px-3 py-2 text-xs font-black uppercase text-slate-950 hover:bg-yellow-200 sm:px-4 sm:py-2.5 sm:text-sm" href="/entrar">Entrar</Link>}</div>
+      <div className="flex shrink-0 items-center gap-2">{user ? <><span className="hidden items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm font-bold text-yellow-300 lg:flex"><WalletCards aria-hidden="true" className="size-4" />{user.creditBalance.toLocaleString("pt-BR")}</span><Link className="motion-button grid size-9 place-items-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 sm:size-10" href={`/comunidade/${user.id}`} aria-label="Meu perfil público"><UserRound aria-hidden="true" className="size-5" /></Link><form action={logoutAction}><button className="motion-button inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-500/10 px-2.5 text-xs font-black uppercase text-red-200 transition hover:border-red-400/40 hover:bg-red-500/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 sm:h-10 sm:px-3" type="submit" aria-label="Sair da conta"><LogOut aria-hidden="true" className="size-4" /><span className="hidden sm:inline">Sair</span></button></form></> : <Link className="motion-button rounded-xl bg-yellow-300 px-3 py-2 text-xs font-black uppercase text-slate-950 hover:bg-yellow-200 sm:px-4 sm:py-2.5 sm:text-sm" href="/entrar">Entrar</Link>}</div>
     </div>
   </header>;
 }
